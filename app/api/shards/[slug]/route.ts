@@ -29,7 +29,7 @@ export async function GET(
 
     const { data: shard, error } = await supabase
         .from("shards")
-        .select("*, users(name, username)")
+        .select("*, users(*)")
         .eq("slug", slug.trim())
         .single();
 

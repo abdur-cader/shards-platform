@@ -54,7 +54,7 @@ const Navbar = ({ className }: { className?: string }) => {
         </MenuItem>
         {session && session?.user ? (
           <>
-            <MenuItem setActive={setActive} active={active} item={session?.user?.id ?? "User"}>
+            <MenuItem setActive={setActive} active={active} item={session?.user?.name ?? "User"}>
               <div className="flex flex-col space-y-4 text-sm">
                 <HoveredLink href={`/users/${session?.user?.github_login}`}>My Profile</HoveredLink>
                 <HoveredLink href="/account">Account</HoveredLink>

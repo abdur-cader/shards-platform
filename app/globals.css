@@ -9,6 +9,54 @@
   color: black;
 }
 
+::-webkit-scrollbar {
+  width: 12px;
+  /* Makes it thicker */
+  height: 12px;
+  /* For horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  /* No background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #071b29;
+  /* Gray-400 color */
+  border-radius: 6px;
+  border: 3px solid transparent;
+  /* Creates padding effect */
+  background-clip: content-box;
+  /* Ensures color stays within borders */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #071b29;
+  /* Gray-500 on hover */
+  background-clip: content-box;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: auto;
+  /* 'auto' or 'thin' */
+  scrollbar-color: #071b29 transparent;
+  /* thumb and track color */
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -124,6 +172,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -132,9 +181,16 @@
 @theme {
   --animate-float: float 3s ease-in-out infinite;
 
-  @keyframes float{
-    0%, 100% { transform: rotate(0) translateX(0); }
-    50% { transform: rotate(0) translateX(-6px); }
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: rotate(0) translateX(0);
+    }
+
+    50% {
+      transform: rotate(0) translateX(-6px);
+    }
   }
 }
 
@@ -142,15 +198,19 @@
   0% {
     background-position: 50% 50%;
   }
+
   25% {
     background-position: 70% 30%;
   }
+
   50% {
     background-position: 50% 50%;
   }
+
   75% {
     background-position: 30% 70%;
   }
+
   100% {
     background-position: 50% 50%;
   }
