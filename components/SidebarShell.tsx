@@ -1,4 +1,5 @@
-"use client"
+// SidebarShell.tsx
+"use client";
 import { PiCoinVerticalLight } from "react-icons/pi";
 import {
   Sidebar,
@@ -13,13 +14,13 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 import {
   Sparkles,
@@ -33,24 +34,32 @@ import {
   LogOut,
   CreditCard,
   Bell,
-  User
-} from "lucide-react"
-import AiCredits from "./AiCreditsSVG"
-
-const mainItems = [
-  { title: "Home", url: "/", icon: Home },
-  { title: "Dashboard", url: "/users/dashboard", icon: Gauge },
-  { title: "Profile", url: "/users/profile", icon: User },
-]
-
-const shardItems = [
-  { title: "Explore Shards", url: "/shards/explore", icon: BringToFront },
-  { title: "Create Shard", url: "/shards/create", icon: PlusIcon },
-  { title: "AI Toolkit", url: "/shards", icon: Sparkles },
-]
+  User,
+} from "lucide-react";
 
 export function SidebarShell({ session }: { session: any }) {
-  const { open } = useSidebar()
+  const { open } = useSidebar();
+
+  const mainItems = [
+    { title: "Home", url: "/", icon: Home },
+    {
+      title: "Dashboard",
+      url: `/users/${session?.user?.username}/dashboard`,
+      icon: Gauge,
+    },
+    {
+      title: "Profile",
+      url: `/users/${session?.user?.username}/profile`,
+      icon: User,
+    },
+  ];
+
+  const shardItems = [
+    { title: "Explore Shards", url: "/shards/explore", icon: BringToFront },
+    { title: "Create Shard", url: "/shards/create", icon: PlusIcon },
+    { title: "AI Toolkit", url: "/shards", icon: Sparkles },
+  ];
+
   return (
     <Sidebar className="fixed h-screen left-0 top-0 z-50" collapsible="icon">
       {/* Header */}
@@ -74,7 +83,7 @@ export function SidebarShell({ session }: { session: any }) {
       <SidebarContent>
         {/* Main */}
         <SidebarGroup>
-            <div className="my-1 h-px bg-border" />
+          <div className="my-1 h-px bg-border" />
           <SidebarGroupLabel className="font-prompt">Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -94,11 +103,10 @@ export function SidebarShell({ session }: { session: any }) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        
 
         {/* Shards */}
         <SidebarGroup>
-        <div className="my-1 h-px bg-border" />
+          <div className="my-1 h-px bg-border" />
           <SidebarGroupLabel className="font-prompt">Shards</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -131,7 +139,6 @@ export function SidebarShell({ session }: { session: any }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      
 
       {/* Footer */}
       <SidebarFooter>
@@ -143,7 +150,9 @@ export function SidebarShell({ session }: { session: any }) {
                   <img
                     src={session?.user?.image || ""}
                     alt="avatar"
-                    className={`${open ? "w-6 h-6" : "w-6 h-4"} rounded-full object-cover flex-shrink-0 transition-all`}
+                    className={`${
+                      open ? "w-6 h-6" : "w-6 h-4"
+                    } rounded-full object-cover flex-shrink-0 transition-all`}
                   />
                   <span className="truncate">{session?.user?.name}</span>
                   <ChevronUp className="ml-auto w-5 h-5" />
@@ -163,8 +172,12 @@ export function SidebarShell({ session }: { session: any }) {
                       className="w-8 h-8 rounded-md object-cover"
                     />
                     <div className="space-y-0.5">
-                      <p className="font-medium leading-none">{session?.user?.name || "Username"}</p>
-                      <p className="text-xs text-muted-foreground truncate">{session?.user?.email || "email@example.com"}</p>
+                      <p className="font-medium leading-none">
+                        {session?.user?.name || "Username"}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {session?.user?.email || "email@example.com"}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -193,12 +206,16 @@ export function SidebarShell({ session }: { session: any }) {
                 <div className="my-1 h-px bg-border" />
 
                 <DropdownMenuItem>
-                    <PiCoinVerticalLight className="mr-2 h-4 w-4" />
-                    <div className="flex flex-col">
-                        <span>Credit management</span>
-                        <span className="text-xs text-muted-foreground">{session?.user?.ai_credits.toLocaleString()} credits remaining</span>
-                    </div>
+                  <PiCoinVerticalLight className="mr-2 h-4 w-4" />
+                  <div className="flex flex-col">
+                    <span>Credit management</span>
+                    <span className="text-xs text-muted-foreground">
+                      {session?.user?.ai_credits.toLocaleString()} credits
+                      remaining
+                    </span>
+                  </div>
                 </DropdownMenuItem>
+                <div className="my-1 h-px bg-border" />
 
                 <DropdownMenuItem className="text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />
@@ -210,5 +227,5 @@ export function SidebarShell({ session }: { session: any }) {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
