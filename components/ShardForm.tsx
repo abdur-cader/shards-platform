@@ -1,41 +1,37 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { FileUploader } from "./FileUploader";
-import { FileUpload } from "./ui/file-upload";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react"
+import { useSession } from "next-auth/react";
 
 const shardSchema = z.object({
   title: z.string().min(1, "Title is required"),
   desc: z.string().min(1, "Description is required"),
   github_repo: z.string().min(1, "Select a repository."),
   image_url: z.array(z.string().url("Invalid image URL")).optional(),
-  files: z
-    .array(z.any())
-    .optional(),
+  files: z.array(z.any()).optional(),
 });
 
 type ShardFormData = z.infer<typeof shardSchema>;
@@ -45,20 +41,21 @@ interface ShardFormProps {
 }
 
 export default function ShardForm({ repos }: ShardFormProps) {
-  const { data: session } = useSession()
+  const { data: session } = useSession();
+  const router = useRouter();
 
-  const form = useForm<ShardFormData & {files?: File[] }>({
+  const form = useForm<ShardFormData & { files?: File[] }>({
     resolver: zodResolver(shardSchema),
     defaultValues: {
-    github_repo: "",
-    title: "",
-    desc: "",
-    image_url: undefined,
-    files: [],
-  },
+      github_repo: "",
+      title: "",
+      desc: "",
+      image_url: undefined,
+      files: [],
+    },
   });
 
-  const onSubmit = async (formData: ShardFormData & {files?: File[]}) => {
+  const onSubmit = async (formData: ShardFormData & { files?: File[] }) => {
     console.log("Valid Form Data:", formData);
 
     const slug = formData.title.trim().toLowerCase().replace(/\s+/g, "-");
@@ -76,18 +73,23 @@ export default function ShardForm({ repos }: ShardFormProps) {
           const filePath = `shards/${Date.now()}-${sanitizedFileName}`;
 
           // Upload the file
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from("shard-image-uploads")
-            .upload(filePath, file);
+          const { data: uploadData, error: uploadError } =
+            await supabase.storage
+              .from("shard-image-uploads")
+              .upload(filePath, file);
 
           if (uploadError) {
             console.error("Upload error:", uploadError);
-            toast.error(`Upload failed for ${file.name}: ${uploadError.message}`);
+            toast.error(
+              `Upload failed for ${file.name}: ${uploadError.message}`
+            );
             continue;
           }
 
           // Get public URL
-          const { data: { publicUrl } } = supabase.storage
+          const {
+            data: { publicUrl },
+          } = supabase.storage
             .from("shard-image-uploads")
             .getPublicUrl(uploadData.path);
 
@@ -97,7 +99,9 @@ export default function ShardForm({ repos }: ShardFormProps) {
         }
       }
 
-      const selectedRepo = repos.find(repo => repo.full_name === formData.github_repo);
+      const selectedRepo = repos.find(
+        (repo) => repo.full_name === formData.github_repo
+      );
       const dbData = {
         title: formData.title,
         desc: formData.desc,
@@ -105,8 +109,8 @@ export default function ShardForm({ repos }: ShardFormProps) {
         image_url: image_urls,
         slug,
         user_id: session?.user?.id,
-        user_github_id: session?.user?.github_id
-      }
+        user_github_id: session?.user?.github_id,
+      };
 
       const { error: insertError } = await supabase
         .from("shards")
@@ -115,19 +119,20 @@ export default function ShardForm({ repos }: ShardFormProps) {
       if (insertError) {
         toast.error(`Insert failed: ${insertError.message}`);
       } else {
-        toast.success("Your Shard has been created")
+        toast.success("Your Shard has been created");
+        router.push(`/shards/${slug}?edit=1`);
       }
     } catch (error) {
-        console.error("Error creating Shard:", error)
+      console.error("Error creating Shard:", error);
     }
-
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 max-w-xl mx-auto mt-6">
-
-
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-5 max-w-xl mx-auto mt-6"
+      >
         <FormField
           control={form.control}
           name="github_repo"
@@ -136,12 +141,19 @@ export default function ShardForm({ repos }: ShardFormProps) {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger className="w-full border roudned p-2 cursor-pointer">
-                    <SelectValue placeholder="Select a repository" className="cursor-pointer" />
+                    <SelectValue
+                      placeholder="Select a repository"
+                      className="cursor-pointer"
+                    />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {repos.map((repo) => (
-                    <SelectItem key={repo.full_name} value={repo.full_name} className="cursor-pointer">
+                    <SelectItem
+                      key={repo.full_name}
+                      value={repo.full_name}
+                      className="cursor-pointer"
+                    >
                       {repo.name}
                     </SelectItem>
                   ))}
@@ -168,7 +180,6 @@ export default function ShardForm({ repos }: ShardFormProps) {
           )}
         />
 
-
         <FormField
           control={form.control}
           name="desc"
@@ -179,15 +190,17 @@ export default function ShardForm({ repos }: ShardFormProps) {
                   {...field}
                   placeholder="This project demonstrates why some apples are green"
                   className="w-full border rounded p-2"
-                  />
+                />
               </FormControl>
             </FormItem>
           )}
         />
-        <FileUploader onFileSelect={(files) => {
-          console.log("✅ onFileSelect triggered with:", files);
-          form.setValue("files", files, { shouldValidate: true });
-        }}/>
+        <FileUploader
+          onFileSelect={(files) => {
+            console.log("✅ onFileSelect triggered with:", files);
+            form.setValue("files", files, { shouldValidate: true });
+          }}
+        />
 
         <Button type="submit" className="px-4 py-2 rounded-4xl cursor-pointer">
           Create Shard

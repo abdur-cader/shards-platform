@@ -20,6 +20,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import ShardContent from "@/components/ShardContent";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -37,13 +38,10 @@ export default async function ShardDetailPage({ params }: Props) {
     headers["sb-access-token"] = session?.supabaseAccessToken;
   }
 
-  const res = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/shards/${slug}`,
-    { 
-      method: "GET",
-      headers,
-    },
-  );
+  const res = await fetch(`${process.env.NEXTAUTH_URL}/api/shards/${slug}`, {
+    method: "GET",
+    headers,
+  });
   const json = await res.json();
 
   if (!res.ok || !json.shard) {
@@ -54,15 +52,15 @@ export default async function ShardDetailPage({ params }: Props) {
   const isOwner = session?.user?.id === shard.user_id;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 mt-[160px] pb-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="max-w-7xl mx-auto px-4 mt-[160px] pb-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* Main Content */}
       <div className="lg:col-span-2 space-y-4">
         {/* Project Title */}
         <h1 className="text-3xl font-bold tracking-tight">{shard.title}</h1>
-        
+
         {/* Project Description */}
         <p className="text-muted-foreground">{shard.desc}</p>
-        
+
         {/* Project Images - Compact Size */}
         {shard.image_url && shard.image_url.length > 0 && (
           <div className="rounded-lg border overflow-hidden bg-muted max-w-2xl">
@@ -92,6 +90,8 @@ export default async function ShardDetailPage({ params }: Props) {
             </Carousel>
           </div>
         )}
+
+        <ShardContent initialMarkdown={shard.markdown || ""} />
       </div>
 
       {/* Sidebar */}
@@ -101,7 +101,7 @@ export default async function ShardDetailPage({ params }: Props) {
           <div className="border rounded-lg p-6 space-y-4">
             <h2 className="text-xl font-semibold">{shard.title}</h2>
             <p className="text-sm text-muted-foreground">{shard.desc}</p>
-            
+
             {/* GitHub Link */}
             {shard.github_repo && (
               <Button asChild variant="outline" className="w-full gap-2">
@@ -126,7 +126,7 @@ export default async function ShardDetailPage({ params }: Props) {
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={shard.users.image || undefined} />
                         <AvatarFallback>
-                          {shard.users.name?.charAt(0) || 'U'}
+                          {shard.users.name?.charAt(0) || "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div>
@@ -145,18 +145,18 @@ export default async function ShardDetailPage({ params }: Props) {
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={shard.users.image || undefined} />
                       <AvatarFallback>
-                        {shard.users.name?.charAt(0) || 'U'}
+                        {shard.users.name?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="space-y-1">
-                      <h4 className="text-sm font-semibold">{shard.users.name}</h4>
+                      <h4 className="text-sm font-semibold">
+                        {shard.users.name}
+                      </h4>
                       <p className="text-sm text-muted-foreground">
                         @{shard.users.username}
                       </p>
                       {shard.users.bio && (
-                        <p className="text-sm pt-2">
-                          {shard.users.bio}
-                        </p>
+                        <p className="text-sm pt-2">{shard.users.bio}</p>
                       )}
                     </div>
                   </div>
