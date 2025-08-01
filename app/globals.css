@@ -115,7 +115,7 @@
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
+  --border: oklch(100% 0.00011 271.152); 
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.705 0.015 286.067);
   --chart-1: oklch(0.646 0.222 41.116);
@@ -129,7 +129,7 @@
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.967 0.001 286.375);
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-border: oklch(0.141 0.005 285.823); /* Changed to dark color */
   --sidebar-ring: oklch(0.705 0.015 286.067);
 }
 
@@ -150,7 +150,7 @@
   --accent: oklch(0.274 0.006 286.033);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
+  --border: oklch(27.274% 0.00003 271.152); /* Changed to dark color */
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.552 0.016 285.938);
   --chart-1: oklch(0.488 0.243 264.376);
@@ -159,18 +159,25 @@
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(94.007% 0.00011 271.152);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.274 0.006 286.033);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-border: oklch(0.141 0.005 285.823); /* Changed to dark color */
   --sidebar-ring: oklch(0.552 0.016 285.938);
 }
+
+/* 1. First, reset all sidebar borders to transparent */
+
 
 @layer base {
   * {
     @apply outline-ring/50; /* avoid universal border */
+  }
+
+  .border {
+    border-color: var(--color-border);
   }
 
   body {
@@ -199,7 +206,7 @@
   .tiptap table td,
   .tiptap table th {
     min-width: 1em;
-    border: 1px solid #3f3f46; /* zinc-700 */
+    border: 1px solid oklch(0.141 0.005 285.823); /* Changed to dark color */
     padding: 0.5rem 1rem;
     vertical-align: top;
     box-sizing: border-box;
@@ -235,9 +242,20 @@
   }
 
   /* Table controls */
-  .tiptap .tableWrapper {
-    position: relative;
-    margin: 1rem 0;
+  .tableWrapper {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: gray transparent;
+  }
+
+  .tableWrapper::-webkit-scrollbar {
+    height: 8px;
+    background-color: transparent;
+  }
+
+  .tableWrapper::-webkit-scrollbar-thumb {
+    background-color: gray;
+    border-radius: 4px;
   }
 
   .tiptap .resize-cursor {
@@ -363,6 +381,87 @@
   }
 }
 
+.tiptap {
+  :first-child {
+    margin-top: 0;
+  }
+
+  pre {
+    background: #121212;
+    border-radius: 0.5rem;
+    color: var(--white);
+    font-family: 'JetBrainsMono', monospace;
+    margin: 1.5rem 0;
+    padding: 0.75rem 1rem;
+
+    code {
+      background: none;
+      color: inherit;
+      font-size: 0.8rem;
+      padding: 0;
+    }
+
+    /* Code styling */
+    .hljs-comment,
+    .hljs-quote {
+      color: #616161;
+    }
+
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-attribute,
+    .hljs-tag,
+    .hljs-regexp,
+    .hljs-link,
+    .hljs-name,
+    .hljs-selector-id,
+    .hljs-selector-class {
+      color: #f98181;
+    }
+
+    .hljs-number,
+    .hljs-meta,
+    .hljs-built_in,
+    .hljs-builtin-name,
+    .hljs-literal,
+    .hljs-type,
+    .hljs-params {
+      color: #fbbc88;
+    }
+
+    .hljs-string,
+    .hljs-symbol,
+    .hljs-bullet {
+      color: #b9f18d;
+    }
+
+    .hljs-title,
+    .hljs-section {
+      color: #faf594;
+    }
+
+    .hljs-keyword,
+    .hljs-selector-tag {
+      color: #70cff8;
+    }
+
+    .hljs-emphasis {
+      font-style: italic;
+    }
+
+    .hljs-strong {
+      font-weight: 700;
+    }
+  }
+
+  blockquote {
+      border-left: 3px solid oklch(0.141 0.005 285.823); /* Changed to dark color */
+      margin: 1.5rem 0;
+      padding-left: 1rem;
+      color: #a1a1aa; /* zinc-400 */;
+    }
+}
+
 @theme {
   --animate-float: float 3s ease-in-out infinite;
 
@@ -402,7 +501,7 @@
 }
 
 .animate-radial-orbit {
-  background: radial-gradient(circle, #112926, #040504, #112926);
+  background: radial-gradient(circle, #76bb0e, #212909, #76bb0e);
   background-size: 200% 200%;
   background-repeat: no-repeat;
   animation: radialOrbit 15s ease-in-out infinite;

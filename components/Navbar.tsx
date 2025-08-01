@@ -1,21 +1,28 @@
 "use client";
 import React, { useState } from "react";
-import { HoveredLink, Menu, MenuItem, ProductItem } from "@/components/ui/navbar-menu";
+import {
+  HoveredLink,
+  Menu,
+  MenuItem,
+  ProductItem,
+} from "@/components/ui/navbar-menu";
 import { cn } from "@/lib/utils";
-import { useSession } from "next-auth/react"
-import { Github} from 'lucide-react'
+import { useSession } from "next-auth/react";
+import { Github } from "lucide-react";
 
-import { signIn, signOut } from "next-auth/react"
-import { toast } from "sonner"
-
+import { signIn, signOut } from "next-auth/react";
+import { toast } from "sonner";
 
 const Navbar = ({ className }: { className?: string }) => {
-    const [active, setActive] = useState<string | null>(null);
-    const {data: session} = useSession();
+  const [active, setActive] = useState<string | null>(null);
+  const { data: session, status } = useSession();
 
   return (
     <div
-      className={cn("fixed top-10 inset-x-0 max-w-2xl mx-auto z-50 font-hind font-[300]", className)}
+      className={cn(
+        "fixed top-0 inset-x-0 w-full mx-auto z-50 font-hind font-[300] bg-black/10 backdrop-blur-md",
+        className
+      )}
     >
       <Menu setActive={setActive}>
         <MenuItem setActive={setActive} active={active} item="Shards">
@@ -24,8 +31,8 @@ const Navbar = ({ className }: { className?: string }) => {
             <HoveredLink href="/shards/create">Create</HoveredLink>
           </div>
         </MenuItem>
-        <MenuItem setActive={setActive} active={active} item="Featured Sites"> {/* Maybe for top website publications, Renames: [Direct Showcases], randomly picks website submissions if metadata (description min) is complete */}
-          <div className="  text-sm grid grid-cols-2 gap-10 font-prompt text-[200] p-4">
+        <MenuItem setActive={setActive} active={active} item="Featured Sites">
+          <div className="text-sm grid grid-cols-2 gap-10 font-prompt text-[200] p-4">
             <ProductItem
               title="Algochurn"
               href="https://algochurn.com"
@@ -36,7 +43,7 @@ const Navbar = ({ className }: { className?: string }) => {
               title="Tailwind Master Kit"
               href="https://tailwindmasterkit.com"
               src="https://assets.aceternity.com/demos/tailwindmasterkit.webp"
-              description="Production ready Tailwind css components for your next project"
+              description="Production ready Tailwind CSS components for your next project"
             />
             <ProductItem
               title="Moonbeam"
@@ -52,45 +59,53 @@ const Navbar = ({ className }: { className?: string }) => {
             />
           </div>
         </MenuItem>
-        {session && session?.user ? (
-          <>
-            <MenuItem setActive={setActive} active={active} item={session?.user?.name ?? "User"}>
-              <div className="flex flex-col space-y-4 text-sm">
-                <HoveredLink href={`/users/${session?.user?.github_login}`}>My Profile</HoveredLink>
-                <HoveredLink href="/account">Account</HoveredLink>
-                <button
+        {status === "loading" ? null : session?.user ? (
+          <MenuItem
+            setActive={setActive}
+            active={active}
+            item={session?.user?.name ?? "User"}
+          >
+            <div className="flex flex-col space-y-4 text-sm">
+              <HoveredLink href={`/users/${session?.user?.github_login}`}>
+                My Profile
+              </HoveredLink>
+              <HoveredLink href="/account">Account</HoveredLink>
+              <button
                 onClick={() => {
                   const delayedSignOut = () =>
                     new Promise((resolve, reject) => {
                       signOut({ redirect: false })
                         .then(() => setTimeout(resolve, 1000))
                         .catch(reject);
-                  });
+                    });
                   toast.promise(delayedSignOut(), {
-                    loading: 'Signing out...',
-                    success: 'Successfully signed out',
-                    error: 'Error signing out',
+                    loading: "Signing out...",
+                    success: "Successfully signed out",
+                    error: "Error signing out",
                   });
                 }}
-                className="text-left cursor-pointer">
+                className="text-left cursor-pointer"
+              >
                 Sign Out
               </button>
-              </div>
-            </MenuItem>
-          </>
+            </div>
+          </MenuItem>
         ) : (
-          <>
-            <MenuItem setActive={setActive} active={active} item="Profile">
-              <div className="flex flex-col space-y-4 text-sm">
-                <button onClick={() => signIn('github', { callbackUrl: "/"})} className="flex items-center gap-2 text-left cursor-pointer"><Github className="w-6 h-6" />Sign in with GitHub</button>
-              </div>
-            </MenuItem>
-          </>
+          <MenuItem setActive={setActive} active={active} item="Profile">
+            <div className="flex flex-col space-y-4 text-sm">
+              <button
+                onClick={() => signIn("github", { callbackUrl: "/" })}
+                className="flex items-center gap-2 text-left cursor-pointer"
+              >
+                <Github className="w-6 h-6" />
+                Sign in with GitHub
+              </button>
+            </div>
+          </MenuItem>
         )}
-        
       </Menu>
     </div>
   );
-}
+};
 
-export default Navbar
+export default Navbar;

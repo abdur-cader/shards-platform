@@ -83,7 +83,7 @@ export function SidebarShell({ session }: { session: any }) {
       <SidebarContent>
         {/* Main */}
         <SidebarGroup>
-          <div className="my-1 h-px bg-border" />
+          <div className="my-1 h-px" />
           <SidebarGroupLabel className="font-prompt">Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

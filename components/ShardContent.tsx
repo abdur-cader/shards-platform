@@ -7,9 +7,13 @@ import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import Superscript from "@tiptap/extension-superscript";
 import Subscript from "@tiptap/extension-subscript";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { TableKit } from "@tiptap/extension-table";
 import { useEffect } from "react";
 import EditorMenu from "./EditorMenu";
+
+import { common, createLowlight } from "lowlight";
+const lowlight = createLowlight(common);
 
 interface Props {
   initialMarkdown: string;
@@ -22,35 +26,24 @@ export default function ShardContent({ initialMarkdown }: Props) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
+        codeBlock: false, // disable built-in to use lowlight
         bulletList: {
-          HTMLAttributes: {
-            class: "list-disc ml-3",
-          },
+          HTMLAttributes: { class: "list-disc ml-3" },
         },
         orderedList: {
-          HTMLAttributes: {
-            class: "list-decimal ml-3",
-          },
-        },
-        link: {
-          protocols: ["ftp", "http", "https", "mailto", "tel"],
-          autolink: true,
-          enableClickSelection: true,
-          linkOnPaste: true,
-          defaultProtocol: "https",
-          HTMLAttributes: {
-            class: "underline text-emerald-900 hover:cursor-pointer",
-          },
+          HTMLAttributes: { class: "list-decimal ml-3" },
         },
       }),
-      TextAlign.configure({
-        types: ["heading", "paragraph"],
-      }),
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
       Highlight,
       Subscript,
       Superscript,
       TableKit.configure({
         table: { resizable: true },
+      }),
+      CodeBlockLowlight.configure({
+        lowlight,
+        defaultLanguage: "plaintext",
       }),
     ],
     content: initialMarkdown || "",
@@ -65,16 +58,16 @@ export default function ShardContent({ initialMarkdown }: Props) {
   });
 
   useEffect(() => {
-    return () => {
-      editor?.destroy();
-    };
+    return () => editor?.destroy();
   }, [editor]);
 
   if (isEditing && editor) {
     return (
       <div>
         <EditorMenu editor={editor} />
-        <EditorContent editor={editor} />
+        <div className="tableWrapper">
+          <EditorContent editor={editor} />
+        </div>
       </div>
     );
   }

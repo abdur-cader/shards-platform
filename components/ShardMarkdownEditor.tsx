@@ -7,6 +7,9 @@ import Highlight from "@tiptap/extension-highlight";
 import Superscript from "@tiptap/extension-superscript";
 import Subscript from "@tiptap/extension-subscript";
 import { useEffect } from "react";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { all } from "lowlight";
+import { TableKit } from "@tiptap/extension-table";
 import EditorMenu from "./EditorMenu";
 
 interface MarkdownEditorProps {
@@ -20,11 +23,26 @@ export default function MarkdownEditor({
 }: MarkdownEditorProps) {
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        codeBlock: false, // disable built-in to use lowlight
+        bulletList: {
+          HTMLAttributes: { class: "list-disc ml-3" },
+        },
+        orderedList: {
+          HTMLAttributes: { class: "list-decimal ml-3" },
+        },
+      }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Highlight,
       Subscript,
       Superscript,
+      TableKit.configure({
+        table: { resizable: true },
+      }),
+      CodeBlockLowlight.configure({
+        lowlight: all,
+        defaultLanguage: "plaintext",
+      }),
     ],
     content: defaultContent,
     autofocus: autoFocus ? "end" : false,

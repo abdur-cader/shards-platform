@@ -2,8 +2,6 @@
 import React from "react";
 import { motion, Transition } from "motion/react";
 
-
-
 const transition: Transition = {
   type: "spring",
   mass: 0.5,
@@ -34,7 +32,11 @@ export const MenuItem = ({
       </motion.p>
       <motion.div
         initial={{ opacity: 0, scale: 0.85, y: 10 }}
-        animate={active === item ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.85, y: 10 }}
+        animate={
+          active === item
+            ? { opacity: 1, scale: 1, y: 0 }
+            : { opacity: 0, scale: 0.85, y: 10 }
+        }
         transition={transition}
       >
         {active === item && (
@@ -42,12 +44,9 @@ export const MenuItem = ({
             <motion.div
               transition={transition}
               layoutId="active"
-              className="bg-white dark:bg-black backdrop-blur-sm rounded-2xl overflow-hidden border border-black/[0.2] dark:border-white/[0.2] shadow-xl"
+              className="bg-black/95 backdrop-blur-md  rounded-2xl overflow-hidden border border-black/[0.2] dark:border-white/[0.2] shadow-xl"
             >
-              <motion.div
-                layout
-                className="w-max h-full p-4"
-              >
+              <motion.div layout className="w-max h-full p-4">
                 {children}
               </motion.div>
             </motion.div>
@@ -68,7 +67,7 @@ export const Menu = ({
   return (
     <nav
       onMouseLeave={() => setActive(null)} // resets the state
-      className="relative rounded-full border border-transparent dark:bg-black dark:border-white/[0.2] bg-white shadow-input flex justify-center space-x-4 px-8 py-6 "
+      className="relative border border-transparent bg-black/20 backdrop-blur-md shadow-sm shadow-input flex justify-center space-x-4 px-8 py-6 "
     >
       {children}
     </nav>

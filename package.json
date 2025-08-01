@@ -29,6 +29,7 @@
     "@splinetool/react-spline": "^4.0.0",
     "@supabase/supabase-js": "^2.52.0",
     "@tabler/icons-react": "^3.34.0",
+    "@tiptap/extension-code-block-lowlight": "^3.0.7",
     "@tiptap/extension-highlight": "^3.0.7",
     "@tiptap/extension-horizontal-rule": "^3.0.7",
     "@tiptap/extension-image": "^3.0.7",
@@ -49,6 +50,7 @@
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.0",
     "jsonwebtoken": "^9.0.2",
+    "lowlight": "^3.3.0",
     "lucide-react": "^0.514.0",
     "motion": "^12.23.3",
     "next": "^15.4.5",
@@ -68,6 +70,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/lowlight": "^2.0.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

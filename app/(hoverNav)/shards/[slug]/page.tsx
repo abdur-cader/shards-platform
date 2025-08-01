@@ -21,6 +21,8 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import ShardContent from "@/components/ShardContent";
+import { Icons } from "@/components/icons";
+import { formatDate } from "@/lib/utils";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -51,135 +53,260 @@ export default async function ShardDetailPage({ params }: Props) {
   const shard = json.shard;
   const isOwner = session?.user?.id === shard.user_id;
 
+  const iconBtnBase = `
+  rounded-full
+  bg-gradient-to-r from-zinc-800 to-zinc-700
+  border border-gray-600
+  text-zinc-100
+  shadow-md
+  relative overflow-hidden
+  transition-all duration-300 ease-in-out
+  hover:scale-110
+  hover:from-lime-800 hover:to-lime-700
+  hover:border-lime-500
+  group
+`;
+
   return (
-    <div className="max-w-7xl mx-auto px-4 mt-[160px] pb-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Main Content */}
-      <div className="lg:col-span-2 space-y-4">
-        {/* Project Title */}
-        <h1 className="text-3xl font-bold tracking-tight">{shard.title}</h1>
-
-        {/* Project Description */}
-        <p className="text-muted-foreground">{shard.desc}</p>
-
-        {/* Project Images - Compact Size */}
-        {shard.image_url && shard.image_url.length > 0 && (
-          <div className="rounded-lg border overflow-hidden bg-muted max-w-2xl">
-            <Carousel className="w-full">
-              <CarouselContent>
-                {shard.image_url.map((url: string, index: number) => (
-                  <CarouselItem key={index}>
-                    <div className="relative aspect-video">
-                      <Image
-                        src={url}
-                        alt={`Project preview ${index + 1}`}
-                        fill
-                        className="object-contain"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
-                        priority={index === 0}
-                      />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              {shard.image_url.length > 1 && (
-                <>
-                  <CarouselPrevious className="left-4" />
-                  <CarouselNext className="right-4" />
-                </>
-              )}
-            </Carousel>
-          </div>
-        )}
-
-        <ShardContent initialMarkdown={shard.markdown || ""} />
+    <div className="min-h-screen w-full bg-gradient-to-br py-50 from-[#050505] via-[#0a0a0a] to-[#050505]">
+      {/* Decorative background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat [mask-image:linear-gradient(180deg,white,transparent_90%)] opacity-10" />
+        <div className="absolute -left-20 -top-20 w-64 h-64 bg-lime-500/10 rounded-full blur-3xl" />
+        <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-lime-500/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Sidebar */}
-      <aside className="lg:col-span-1 space-y-6">
-        <div className="sticky top-24 space-y-6 bg-gradient-to-b from-emerald-500/5 to-purple-500/5 rounded-lg overflow-hidden">
-          {/* Project Info Card */}
-          <div className="border rounded-lg p-6 space-y-4">
-            <h2 className="text-xl font-semibold">{shard.title}</h2>
-            <p className="text-sm text-muted-foreground">{shard.desc}</p>
-
-            {/* GitHub Link */}
-            {shard.github_repo && (
-              <Button asChild variant="outline" className="w-full gap-2">
-                <a
-                  href={shard.github_repo}
-                  target="_blank"
-                  rel="noopener noreferrer"
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10">
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Project Header */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-lime-200 to-lime-400">
+                {shard.title}
+              </h1>
+              {isOwner && (
+                <Badge
+                  variant="outline"
+                  className="border-lime-500/30 text-lime-400 font-prompt bg-lime-800/30 font-[350]"
                 >
-                  <GithubIcon className="h-4 w-4" />
-                  View on GitHub
-                </a>
-              </Button>
-            )}
+                  Your Shard
+                </Badge>
+              )}
+            </div>
 
-            {/* Author Info */}
-            <div className="pt-4 border-t ">
-              <h3 className="text-sm font-medium mb-2">Created by</h3>
+            <p className="text-lg text-zinc-300 max-w-3xl">{shard.desc}</p>
+
+            <div className="flex items-center gap-4 text-sm text-zinc-400">
+              <span className="flex items-center gap-1.5">
+                <Icons.calendar className="h-4 w-4" />
+                {formatDate(shard.created_at)}
+              </span>
+              {shard.updated_at && (
+                <span className="flex items-center gap-1.5">
+                  <Icons.edit className="h-4 w-4" />
+                  Updated {formatDate(shard.updated_at)}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Project Images */}
+          {shard.image_url && shard.image_url.length > 0 && (
+            <div className="rounded-xl border border-zinc-800 overflow-hidden bg-gradient-to-br from-zinc-900/50 to-zinc-800/20 max-w-4xl shadow-lg shadow-black/50">
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {shard.image_url.map((url: string, index: number) => (
+                    <CarouselItem key={index}>
+                      <div className="relative aspect-video">
+                        <Image
+                          src={url}
+                          alt={`Project preview ${index + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
+                          priority={index === 0}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/60 via-transparent to-transparent" />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                {shard.image_url.length > 1 && (
+                  <>
+                    <CarouselPrevious className="left-4 bg-zinc-900/80 hover:bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    <CarouselNext className="right-4 bg-zinc-900/80 hover:bg-zinc-800 border-zinc-700 text-zinc-100" />
+                  </>
+                )}
+              </Carousel>
+            </div>
+          )}
+
+          {/* Content with animated border */}
+          <div className="relative group">
+            <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-lime-300/50 to-lime-400/50 opacity-10 group-hover:opacity-20 blur-sm transition duration-500" />
+            <div className="relative rounded-lg border border-zinc-800 bg-neutral-900/80 backdrop-blur-sm overflow-hidden p-6">
+              <ShardContent initialMarkdown={shard.markdown || ""} />
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <aside className="lg:col-span-1 space-y-8">
+          <div className="sticky top-28 space-y-8">
+            {/* Project Actions Card */}
+            <div className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/50 rounded-xl border border-zinc-800 p-6 space-y-6 shadow-lg shadow-black/30">
+              {/* Added title and description */}
+              <div className="space-y-3">
+                <h2 className="text-xl font-semibold text-white">
+                  {shard.title}
+                </h2>
+                <p className="text-sm text-zinc-300">{shard.desc}</p>
+              </div>
+
+              {shard.github_repo && (
+                <Button
+                  asChild
+                  className="w-full relative overflow-hidden rounded-lg 
+             border border-gray-600
+             bg-gradient-to-r from-zinc-800 to-zinc-700 
+             text-zinc-100 shadow-md 
+             transition-all duration-300 ease-in-out
+             hover:scale-105 
+             hover:from-lime-800 hover:to-lime-700
+             hover:border-lime-500
+             group"
+                >
+                  <a
+                    href={shard.github_repo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="gap-2 relative z-10 flex items-center justify-center py-2"
+                  >
+                    <GithubIcon className="h-5 w-5" />
+                    <span>View Repository</span>
+
+                    {/* lime shimmer overlay */}
+                    <span
+                      className="absolute inset-0 w-[200%]
+                 bg-gradient-to-r from-transparent
+                 via-[rgba(190,242,100,0.2)] to-transparent
+                 -translate-x-full group-hover:translate-x-0
+                 transition-transform duration-500 ease-in-out"
+                    />
+                  </a>
+                </Button>
+              )}
+
+              <div className="flex items-center gap-4">
+                <Button variant="ghost" size="icon" className={iconBtnBase}>
+                  <Icons.heart className="h-5 w-5 relative z-10" />
+
+                  {/* lime shimmer overlay */}
+                  <span
+                    className="absolute inset-0 w-[200%]
+      bg-gradient-to-r from-transparent
+      via-[rgba(190,242,100,0.2)] to-transparent
+      -translate-x-full group-hover:translate-x-0
+      transition-transform duration-500 ease-in-out"
+                  />
+                </Button>
+
+                <Button variant="ghost" size="icon" className={iconBtnBase}>
+                  <Icons.bookmark className="h-5 w-5 relative z-10" />
+
+                  <span
+                    className="absolute inset-0 w-[200%]
+      bg-gradient-to-r from-transparent
+      via-[rgba(190,242,100,0.2)] to-transparent
+      -translate-x-full group-hover:translate-x-0
+      transition-transform duration-500 ease-in-out"
+                  />
+                </Button>
+
+                <Button variant="ghost" size="icon" className={iconBtnBase}>
+                  <Icons.share2 className="h-5 w-5 relative z-10" />
+
+                  <span
+                    className="absolute inset-0 w-[200%]
+      bg-gradient-to-r from-transparent
+      via-[rgba(190,242,100,0.2)] to-transparent
+      -translate-x-full group-hover:translate-x-0
+      transition-transform duration-500 ease-in-out"
+                  />
+                </Button>
+              </div>
+            </div>
+
+            {/* Author Card */}
+            <div className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/50 rounded-xl border border-zinc-800 p-6 space-y-4 shadow-lg shadow-black/30">
+              <h3 className="text-sm font-medium text-zinc-300 uppercase tracking-wider mb-2">
+                Created by
+              </h3>
               <HoverCard openDelay={200} closeDelay={100}>
                 <HoverCardTrigger asChild>
                   <Link href={`/users/${shard.users.username}`}>
                     <div className="flex items-center gap-3 group cursor-pointer">
-                      <Avatar className="h-10 w-10">
+                      <Avatar className="h-12 w-12 border-2 border-zinc-600">
                         <AvatarImage src={shard.users.image || undefined} />
-                        <AvatarFallback>
+                        <AvatarFallback className="bg-gradient-to-br from-zinc-500/20 to-zinc-600/20">
                           {shard.users.name?.charAt(0) || "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium group-hover:text-primary hover:underline transition-colors">
+                        <p className="font-medium group-hover:text-lime-300 transition-colors">
                           {shard.users.name}
                         </p>
-                        <p className="text-sm text-muted-foreground hover:underline">
+                        <p className="text-sm text-zinc-400 hover:text-zinc-300">
                           @{shard.users.username}
                         </p>
                       </div>
                     </div>
                   </Link>
                 </HoverCardTrigger>
-                <HoverCardContent className="w-full bg-gradient-to-br from-zinc-900 via-zinc-500/10 to-zinc-900 border border-zinc-700 shadow-lg rounded-xl">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12">
+                <HoverCardContent
+                  className="w-full bg-gradient-to-br from-zinc-900 via-zinc-800/80 to-zinc-900 border border-zinc-700 shadow-xl rounded-xl backdrop-blur-sm"
+                  side="left"
+                >
+                  <div className="flex items-start space-x-4">
+                    <Avatar className="h-14 w-14 border-2 border-zinc-600">
                       <AvatarImage src={shard.users.image || undefined} />
-                      <AvatarFallback>
+                      <AvatarFallback className="bg-gradient-to-br from-zinc-500/20 to-zinc-600/20">
                         {shard.users.name?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-semibold">
+                    <div className="space-y-1.5">
+                      <h4 className="text-sm font-semibold text-white">
                         {shard.users.name}
                       </h4>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-zinc-400">
                         @{shard.users.username}
                       </p>
                       {shard.users.bio && (
-                        <p className="text-sm pt-2">{shard.users.bio}</p>
+                        <p className="text-sm text-zinc-300 pt-2">
+                          {shard.users.bio}
+                        </p>
                       )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-3 bg-zinc-800/50 border-zinc-700 hover:bg-zinc-700/50 text-zinc-200"
+                        asChild
+                      >
+                        <Link href={`/users/${shard.users.username}`}>
+                          View Profile
+                        </Link>
+                      </Button>
                     </div>
                   </div>
                 </HoverCardContent>
               </HoverCard>
             </div>
-          </div>
 
-          {/* Tags */}
-          {shard.tags && shard.tags.length > 0 && (
-            <div className="border rounded-lg p-6">
-              <h3 className="text-sm font-medium mb-2">Tags</h3>
-              <div className="flex flex-wrap gap-2">
-                {shard.tags.map((tag: string) => (
-                  <Badge key={tag} variant="secondary">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </aside>
+            {/* Tags & Details Card */}
+          </div>
+        </aside>
+      </div>
 
       {/* Owner Dock */}
       {isOwner && (
