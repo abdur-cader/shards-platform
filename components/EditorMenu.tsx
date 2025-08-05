@@ -180,7 +180,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
       component: (
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="flex items-center gap-1 p-1 rounded hover:bg-emerald-900/25 hover:text-white transition-colors"
+            className="flex items-center gap-1 p-1 rounded hover:bg-lime-900/25 hover:text-white transition-colors"
             onMouseDown={(e) => {
               e.preventDefault();
               editor.commands.focus();
@@ -199,7 +199,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
                   .insertTable({ rows: 2, cols: 2, withHeaderRow: true })
                   .run()
               }
-              className="flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white"
+              className="flex items-center gap-2 hover:bg-lime-900/25 hover:text-white"
             >
               <Table className="h-4 w-4" />
               Insert Table
@@ -208,7 +208,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => editor.chain().focus().addColumnBefore().run()}
               disabled={!editor.can().addColumnBefore()}
-              className="flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white"
+              className="flex items-center gap-2 hover:bg-lime-900/25 hover:text-white"
             >
               <Columns className="h-4 w-4" />
               Add Column Before
@@ -217,7 +217,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => editor.chain().focus().addColumnAfter().run()}
               disabled={!editor.can().addColumnAfter()}
-              className="flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white"
+              className="flex items-center gap-2 hover:bg-lime-900/25 hover:text-white"
             >
               <Columns className="h-4 w-4" />
               Add Column After
@@ -226,7 +226,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => editor.chain().focus().deleteColumn().run()}
               disabled={!editor.can().deleteColumn()}
-              className="flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white"
+              className="flex items-center gap-2 hover:bg-lime-900/25 hover:text-white"
             >
               <Columns className="h-4 w-4" />
               Delete Column
@@ -235,7 +235,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => editor.chain().focus().addRowBefore().run()}
               disabled={!editor.can().addRowBefore()}
-              className="flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white"
+              className="flex items-center gap-2 hover:bg-lime-900/25 hover:text-white"
             >
               <Rows className="h-4 w-4" />
               Add Row Before
@@ -244,7 +244,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => editor.chain().focus().addRowAfter().run()}
               disabled={!editor.can().addRowAfter()}
-              className="flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white"
+              className="flex items-center gap-2 hover:bg-lime-900/25 hover:text-white"
             >
               <Rows className="h-4 w-4" />
               Add Row After
@@ -253,7 +253,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => editor.chain().focus().deleteRow().run()}
               disabled={!editor.can().deleteRow()}
-              className="flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white"
+              className="flex items-center gap-2 hover:bg-lime-900/25 hover:text-white"
             >
               <Trash2 className="h-4 w-4" />
               Delete Row
@@ -262,7 +262,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => editor.chain().focus().mergeCells().run()}
               disabled={!editor.can().mergeCells()}
-              className="flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white"
+              className="flex items-center gap-2 hover:bg-lime-900/25 hover:text-white"
             >
               <Merge className="h-4 w-4" />
               Merge Cells
@@ -271,7 +271,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => editor.chain().focus().splitCell().run()}
               disabled={!editor.can().splitCell()}
-              className="flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white"
+              className="flex items-center gap-2 hover:bg-lime-900/25 hover:text-white"
             >
               <Split className="h-4 w-4" />
               Split Cell
@@ -280,7 +280,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => editor.chain().focus().deleteTable().run()}
               disabled={!editor.can().deleteTable()}
-              className="flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white"
+              className="flex items-center gap-2 hover:bg-lime-900/25 hover:text-white"
             >
               <Table className="h-4 w-4" />
               Delete Table
@@ -292,15 +292,15 @@ function EditorMenu({ editor }: { editor: Editor }) {
     {
       component: (
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-1 p-1 rounded hover:bg-emerald-900/25 hover:text-white transition-colors">
+          <DropdownMenuTrigger className="flex items-center gap-1 p-1 rounded hover:bg-lime-900/25 hover:text-white transition-colors">
             <span>{getActiveHeading()}</span>
             <ChevronDown className="h-3 w-3" />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="min-w-[180px] bg-black">
             <DropdownMenuItem
               onClick={() => editor.chain().focus().setParagraph().run()}
-              className={`flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white ${
-                editorState.isParagraph ? "bg-emerald-700/20 text-white" : ""
+              className={`flex items-center gap-2 hover:bg-lime-900/25 hover:text-white ${
+                editorState.isParagraph ? "bg-lime-700/20 text-white" : ""
               }`}
             >
               <Pilcrow className="h-4 w-4" />
@@ -309,8 +309,8 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 1 }).run()
               }
-              className={`flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white ${
-                editorState.isHeading1 ? "bg-emerald-700/20 text-white" : ""
+              className={`flex items-center gap-2 hover:bg-lime-900/25 hover:text-white ${
+                editorState.isHeading1 ? "bg-lime-700/20 text-white" : ""
               }`}
             >
               <Heading1 className="h-4 w-4" />
@@ -319,8 +319,8 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 2 }).run()
               }
-              className={`flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white ${
-                editorState.isHeading2 ? "bg-emerald-700/20 text-white" : ""
+              className={`flex items-center gap-2 hover:bg-lime-900/25 hover:text-white ${
+                editorState.isHeading2 ? "bg-lime-700/20 text-white" : ""
               }`}
             >
               <Heading2 className="h-4 w-4" />
@@ -329,8 +329,8 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 3 }).run()
               }
-              className={`flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white ${
-                editorState.isHeading3 ? "bg-emerald-700/20 text-white" : ""
+              className={`flex items-center gap-2 hover:bg-lime-900/25 hover:text-white ${
+                editorState.isHeading3 ? "bg-lime-700/20 text-white" : ""
               }`}
             >
               <Heading3 className="h-4 w-4" />
@@ -339,8 +339,8 @@ function EditorMenu({ editor }: { editor: Editor }) {
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 4 }).run()
               }
-              className={`flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white ${
-                editorState.isHeading4 ? "bg-emerald-700/20 text-white" : ""
+              className={`flex items-center gap-2 hover:bg-lime-900/25 hover:text-white ${
+                editorState.isHeading4 ? "bg-lime-700/20 text-white" : ""
               }`}
             >
               <Heading4 className="h-4 w-4" />
@@ -352,15 +352,15 @@ function EditorMenu({ editor }: { editor: Editor }) {
     {
       component: (
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-1 p-1 rounded hover:bg-emerald-900/25 hover:text-white transition-colors">
+          <DropdownMenuTrigger className="flex items-center gap-1 p-1 rounded hover:bg-lime-900/25 hover:text-white transition-colors">
             <span>{getActiveList()}</span>
             <ChevronDown className="h-3 w-3" />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="min-w-[180px] bg-black">
             <DropdownMenuItem
               onClick={() => editor.chain().focus().toggleBulletList().run()}
-              className={`flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white ${
-                editorState.isBulletList ? "bg-emerald-700/20 text-white" : ""
+              className={`flex items-center gap-2 hover:bg-lime-900/25 hover:text-white ${
+                editorState.isBulletList ? "bg-lime-700/20 text-white" : ""
               }`}
             >
               <List className="h-4 w-4" />
@@ -368,8 +368,8 @@ function EditorMenu({ editor }: { editor: Editor }) {
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              className={`flex items-center gap-2 hover:bg-emerald-900/25 hover:text-white ${
-                editorState.isOrderedList ? "bg-emerald-700/20 text-white" : ""
+              className={`flex items-center gap-2 hover:bg-lime-900/25 hover:text-white ${
+                editorState.isOrderedList ? "bg-lime-700/20 text-white" : ""
               }`}
             >
               <ListOrdered className="h-4 w-4" />
@@ -440,7 +440,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
               pressed={editorState.isLink}
               disabled={!editorState.canLink}
               onPressedChange={handleLinkToggle}
-              className="hover:bg-emerald-900/20 hover:text-white data-[state=on]:bg-emerald-700/25 data-[state=on]:text-white"
+              className="hover:bg-lime-900/20 hover:text-white data-[state=on]:bg-lime-700/25 data-[state=on]:text-white"
             >
               <Link className="h-4 w-4" />
             </Toggle>
@@ -472,7 +472,7 @@ function EditorMenu({ editor }: { editor: Editor }) {
                 <Button
                   type="submit"
                   size="sm"
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                  className="bg-lime-700 hover:bg-lime-800 text-white"
                 >
                   Apply
                 </Button>
@@ -517,33 +517,35 @@ function EditorMenu({ editor }: { editor: Editor }) {
   ];
 
   return (
-    <div className="flex items-center gap-1 p-1">
-      {MENU_OPTIONS.map((opt, idx) => {
-        if ("separator" in opt && opt.separator) {
+    <div className="sticky top-[120px] z-10 bg-black border-b border-neutral-800 bg-neutral-800 rounded-md border-neutral-500">
+      <div className="flex items-center gap-1 p-1">
+        {MENU_OPTIONS.map((opt, idx) => {
+          if ("separator" in opt && opt.separator) {
+            return (
+              <div
+                key={`sep-${idx}`}
+                className="h-6 w-px bg-neutral-800 mx-1"
+                aria-hidden="true"
+              />
+            );
+          }
+          if ("component" in opt) {
+            return <React.Fragment key={idx}>{opt.component}</React.Fragment>;
+          }
           return (
-            <div
-              key={`sep-${idx}`}
-              className="h-6 w-px bg-neutral-800 mx-1"
-              aria-hidden="true"
-            />
+            <Toggle
+              key={idx}
+              size="sm"
+              pressed={opt.isActive?.(editorState) ?? false}
+              disabled={opt.isEnabled ? !opt.isEnabled(editorState) : false}
+              onPressedChange={() => opt.command && opt.command(editor)}
+              className="hover:bg-lime-900/20 hover:text-white data-[state=on]:bg-lime-700/25 data-[state=on]:text-white"
+            >
+              {opt.icon}
+            </Toggle>
           );
-        }
-        if ("component" in opt) {
-          return <React.Fragment key={idx}>{opt.component}</React.Fragment>;
-        }
-        return (
-          <Toggle
-            key={idx}
-            size="sm"
-            pressed={opt.isActive?.(editorState) ?? false}
-            disabled={opt.isEnabled ? !opt.isEnabled(editorState) : false}
-            onPressedChange={() => opt.command && opt.command(editor)}
-            className="hover:bg-emerald-900/20 hover:text-white data-[state=on]:bg-emerald-700/25 data-[state=on]:text-white"
-          >
-            {opt.icon}
-          </Toggle>
-        );
-      })}
+        })}
+      </div>
     </div>
   );
 }

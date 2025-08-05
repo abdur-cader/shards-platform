@@ -49,7 +49,7 @@ export function SidebarShell({ session }: { session: any }) {
     },
     {
       title: "Profile",
-      url: `/users/${session?.user?.username}/profile`,
+      url: `/users/${session?.user?.username}`,
       icon: User,
     },
   ];

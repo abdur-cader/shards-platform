@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
-import { Hind_Siliguri } from "next/font/google"
-import { Prompt } from "next/font/google"
+import { Hind_Siliguri } from "next/font/google";
+import { Prompt } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,17 +21,16 @@ export const metadata: Metadata = {
 };
 
 const PromptFont = Prompt({
-    subsets: ['latin'],
-    weight: ['200', '300', '400', '500'],
-    variable: '--font-prompt',
-})
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "500"],
+  variable: "--font-prompt",
+});
 
 const HindFont = Hind_Siliguri({
-    subsets: ['latin'],
-    weight: '400',
-    variable: '--font-hind',
-})
-
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-hind",
+});
 
 export default function RootLayout({
   children,
@@ -44,9 +43,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${PromptFont.className} ${HindFont.className}`}
       >
-        <SessionProvider>
-          {children}
-        </SessionProvider>
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );

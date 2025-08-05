@@ -5,15 +5,15 @@ import { Prompt } from "next/font/google";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const PromptFont = Prompt({
-  subsets: ['latin'],
-  weight: ['200', '300', '400', '500'],
-  variable: '--font-prompt',
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "500"],
+  variable: "--font-prompt",
 });
 
 const HindFont = Hind_Siliguri({
-  subsets: ['latin'],
-  weight: '400',
-  variable: '--font-hind',
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-hind",
 });
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -26,15 +26,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         <div className="flex flex-col h-full">
           {/* Header with SidebarTrigger */}
-          <div className="flex items-center h-16 px-4 border-b border-border bg-background shrink-0">
+          <div className="flex fixed items-center p-1 ml-1 mt-1 bg-zinc-950 shrink-0 z-50 rounded-full">
             <SidebarTrigger />
             {/* You can add a title or nav items here */}
           </div>
 
           {/* Page content area */}
-          <div className="flex-1 overflow-y-auto">
-            {children}
-          </div>
+          <div className="flex-1 overflow-y-auto">{children}</div>
         </div>
 
         <Toaster position="bottom-center" richColors />
@@ -42,4 +40,3 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     </main>
   );
 }
-

@@ -11,7 +11,8 @@ import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { all } from "lowlight";
 import { TableKit } from "@tiptap/extension-table";
 import EditorMenu from "./EditorMenu";
-
+import { common, createLowlight } from "lowlight";
+const lowlight = createLowlight(common);
 interface MarkdownEditorProps {
   defaultContent?: string;
   autoFocus?: boolean;
@@ -24,7 +25,7 @@ export default function MarkdownEditor({
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        codeBlock: false, // disable built-in to use lowlight
+        codeBlock: false,
         bulletList: {
           HTMLAttributes: { class: "list-disc ml-3" },
         },
@@ -40,7 +41,7 @@ export default function MarkdownEditor({
         table: { resizable: true },
       }),
       CodeBlockLowlight.configure({
-        lowlight: all,
+        lowlight,
         defaultLanguage: "plaintext",
       }),
     ],

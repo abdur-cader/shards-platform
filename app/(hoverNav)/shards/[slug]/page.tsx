@@ -23,6 +23,8 @@ import {
 import ShardContent from "@/components/ShardContent";
 import { Icons } from "@/components/icons";
 import { formatDate } from "@/lib/utils";
+import { LikeButton } from "@/components/LikeButton";
+import { SaveButton } from "@/components/SaveButton";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -53,19 +55,66 @@ export default async function ShardDetailPage({ params }: Props) {
   const shard = json.shard;
   const isOwner = session?.user?.id === shard.user_id;
 
+  // Fetch like information
+  let initialLiked = false;
+  let initialLikeCount = 0;
+
+  if (session?.user?.id) {
+    // Check if current user has liked this shard
+    const { data: likeData } = await supabase
+      .from("likes")
+      .select("id")
+      .eq("user_id", session.user.id)
+      .eq("shard_id", shard.id)
+      .maybeSingle();
+
+    initialLiked = !!likeData;
+  }
+
+  // Get total like count
+  const { count: likeCount } = await supabase
+    .from("likes")
+    .select("*", { count: "exact" })
+    .eq("shard_id", shard.id);
+
+  initialLikeCount = likeCount || 0;
+
+  let initialSaved = false;
+  let initialSaveCount = 0;
+
+  if (session?.user?.id) {
+    // Check if current user has saved this shard
+    const { data: saveData } = await supabase
+      .from("saves")
+      .select("id")
+      .eq("user_id", session.user.id)
+      .eq("shard_id", shard.id)
+      .maybeSingle();
+
+    initialSaved = !!saveData;
+  }
+
+  // Get total save count
+  const { count: saveCount } = await supabase
+    .from("saves")
+    .select("*", { count: "exact" })
+    .eq("shard_id", shard.id);
+
+  initialSaveCount = saveCount || 0;
+
   const iconBtnBase = `
-  rounded-full
-  bg-gradient-to-r from-zinc-800 to-zinc-700
-  border border-gray-600
-  text-zinc-100
-  shadow-md
-  relative overflow-hidden
-  transition-all duration-300 ease-in-out
-  hover:scale-110
-  hover:from-lime-800 hover:to-lime-700
-  hover:border-lime-500
-  group
-`;
+    rounded-full
+    bg-gradient-to-r from-zinc-800 to-zinc-700
+    border border-gray-600
+    text-zinc-100
+    shadow-md
+    relative overflow-hidden
+    transition-all duration-300 ease-in-out
+    hover:scale-110
+    hover:from-lime-800 hover:to-lime-700
+    hover:border-lime-500
+    group
+  `;
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br py-50 from-[#050505] via-[#0a0a0a] to-[#050505]">
@@ -76,9 +125,10 @@ export default async function ShardDetailPage({ params }: Props) {
         <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-lime-500/10 rounded-full blur-3xl" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10">
-        {/* Main Content */}
-        <div className="lg:col-span-2 space-y-8">
+      {/* Main container with adjusted spacing */}
+      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col lg:flex-row gap-8 lg:gap-24 relative z-10">
+        {/* Left content - unchanged position */}
+        <div className="flex-1 space-y-8">
           {/* Project Header */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -143,20 +193,19 @@ export default async function ShardDetailPage({ params }: Props) {
           )}
 
           {/* Content with animated border */}
-          <div className="relative group">
-            <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-lime-300/50 to-lime-400/50 opacity-10 group-hover:opacity-20 blur-sm transition duration-500" />
-            <div className="relative rounded-lg border border-zinc-800 bg-neutral-900/80 backdrop-blur-sm overflow-hidden p-6">
-              <ShardContent initialMarkdown={shard.markdown || ""} />
-            </div>
+          <div className="relative rounded-lg border border-neutral-700 bg-zinc-800/50 p-6">
+            <ShardContent
+              initialMarkdown={shard.content || ""}
+              slug={shard.slug}
+            />
           </div>
         </div>
 
-        {/* Sidebar */}
-        <aside className="lg:col-span-1 space-y-8">
-          <div className="sticky top-28 space-y-8">
+        {/* Sidebar - pushed further right */}
+        <aside className="lg:w-[22rem] xl:w-[24rem] lg:ml-12 sticky top-28 h-fit space-y-8">
+          <div className="space-y-8">
             {/* Project Actions Card */}
             <div className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/50 rounded-xl border border-zinc-800 p-6 space-y-6 shadow-lg shadow-black/30">
-              {/* Added title and description */}
               <div className="space-y-3">
                 <h2 className="text-xl font-semibold text-white">
                   {shard.title}
@@ -168,14 +217,14 @@ export default async function ShardDetailPage({ params }: Props) {
                 <Button
                   asChild
                   className="w-full relative overflow-hidden rounded-lg 
-             border border-gray-600
-             bg-gradient-to-r from-zinc-800 to-zinc-700 
-             text-zinc-100 shadow-md 
-             transition-all duration-300 ease-in-out
-             hover:scale-105 
-             hover:from-lime-800 hover:to-lime-700
-             hover:border-lime-500
-             group"
+                    border border-gray-600
+                    bg-gradient-to-r from-zinc-800 to-zinc-700 
+                    text-zinc-100 shadow-md 
+                    transition-all duration-300 ease-in-out
+                    hover:scale-105 
+                    hover:from-lime-800 hover:to-lime-700
+                    hover:border-lime-500
+                    group"
                 >
                   <a
                     href={shard.github_repo}
@@ -185,54 +234,46 @@ export default async function ShardDetailPage({ params }: Props) {
                   >
                     <GithubIcon className="h-5 w-5" />
                     <span>View Repository</span>
-
-                    {/* lime shimmer overlay */}
                     <span
                       className="absolute inset-0 w-[200%]
-                 bg-gradient-to-r from-transparent
-                 via-[rgba(190,242,100,0.2)] to-transparent
-                 -translate-x-full group-hover:translate-x-0
-                 transition-transform duration-500 ease-in-out"
+                        bg-gradient-to-r from-transparent
+                        via-[rgba(190,242,100,0.2)] to-transparent
+                        -translate-x-full group-hover:translate-x-0
+                        transition-transform duration-500 ease-in-out"
                     />
                   </a>
                 </Button>
               )}
 
               <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" className={iconBtnBase}>
-                  <Icons.heart className="h-5 w-5 relative z-10" />
+                <LikeButton
+                  shardId={shard.id}
+                  userId={session?.user?.id}
+                  initialLiked={initialLiked}
+                  initialLikeCount={initialLikeCount}
+                />
 
-                  {/* lime shimmer overlay */}
-                  <span
-                    className="absolute inset-0 w-[200%]
-      bg-gradient-to-r from-transparent
-      via-[rgba(190,242,100,0.2)] to-transparent
-      -translate-x-full group-hover:translate-x-0
-      transition-transform duration-500 ease-in-out"
-                  />
-                </Button>
+                <SaveButton
+                  shardId={shard.id}
+                  userId={session?.user?.id}
+                  initialSaved={initialSaved}
+                  initialSaveCount={initialSaveCount}
+                />
 
-                <Button variant="ghost" size="icon" className={iconBtnBase}>
-                  <Icons.bookmark className="h-5 w-5 relative z-10" />
+                <div className="h-8 w-px bg-gradient-to-b from-transparent via-zinc-500 to-transparent" />
 
-                  <span
-                    className="absolute inset-0 w-[200%]
-      bg-gradient-to-r from-transparent
-      via-[rgba(190,242,100,0.2)] to-transparent
-      -translate-x-full group-hover:translate-x-0
-      transition-transform duration-500 ease-in-out"
-                  />
-                </Button>
-
-                <Button variant="ghost" size="icon" className={iconBtnBase}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`${iconBtnBase} cursor-pointer`}
+                >
                   <Icons.share2 className="h-5 w-5 relative z-10" />
-
                   <span
                     className="absolute inset-0 w-[200%]
-      bg-gradient-to-r from-transparent
-      via-[rgba(190,242,100,0.2)] to-transparent
-      -translate-x-full group-hover:translate-x-0
-      transition-transform duration-500 ease-in-out"
+                      bg-gradient-to-r from-transparent
+                      via-[rgba(190,242,100,0.2)] to-transparent
+                      -translate-x-full group-hover:translate-x-0
+                      transition-transform duration-500 ease-in-out"
                   />
                 </Button>
               </div>
@@ -302,8 +343,6 @@ export default async function ShardDetailPage({ params }: Props) {
                 </HoverCardContent>
               </HoverCard>
             </div>
-
-            {/* Tags & Details Card */}
           </div>
         </aside>
       </div>

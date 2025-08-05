@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 ::selection {
-  background-color: white;
+  background-color: rgb(160,228,4);
   color: black;
 }
 
@@ -185,13 +185,13 @@
   }
 
   h1 {
-    @apply text-2xl font-bold;
+    @apply text-2xl font-bold py-2;
   }
   h2 {
-    @apply text-xl font-bold;
+    @apply text-xl font-bold py-2;
   }
   h3 {
-    @apply text-lg font-bold;
+    @apply text-lg font-bold py-2;
   }
 
   /* tiptap tables */
@@ -385,6 +385,15 @@
   :first-child {
     margin-top: 0;
   }
+  
+  code {
+    background-color: #121212;
+    border-color: #535353;
+    border-radius: 0.4rem;
+    /* color: var(--black); */
+    font-size: 0.85rem;
+    padding: 0.25em 0.3em;
+  }
 
   pre {
     background: #121212;
@@ -396,7 +405,7 @@
 
     code {
       background: none;
-      color: inherit;
+      /* color: inherit; */
       font-size: 0.8rem;
       padding: 0;
     }
