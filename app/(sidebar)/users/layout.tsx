@@ -25,14 +25,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <AppSidebar />
 
         <div className="flex flex-col h-full">
-          {/* Header with SidebarTrigger */}
-          <div className="flex fixed items-center p-1 ml-1 mt-1 bg-zinc-950 shrink-0 z-50 rounded-full">
-            <SidebarTrigger />
-            {/* You can add a title or nav items here */}
-          </div>
-
-          {/* Page content area */}
-          <div className="flex-1 overflow-y-auto">{children}</div>
+          <div className="flex-1 overflow-y-hidden">{children}</div>
         </div>
 
         <Toaster position="bottom-center" richColors />

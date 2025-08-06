@@ -1,4 +1,3 @@
-// SidebarShell.tsx
 "use client";
 import { PiCoinVerticalLight } from "react-icons/pi";
 import {
@@ -21,7 +20,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-
+import { useEffect, useRef } from "react";
 import {
   Sparkles,
   Home,
@@ -38,7 +37,8 @@ import {
 } from "lucide-react";
 
 export function SidebarShell({ session }: { session: any }) {
-  const { open } = useSidebar();
+  const { open, setOpen, dropdownOpen, setDropdownOpen } = useSidebar();
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   const mainItems = [
     { title: "Home", url: "/", icon: Home },
@@ -60,8 +60,31 @@ export function SidebarShell({ session }: { session: any }) {
     { title: "AI Toolkit", url: "/shards", icon: Sparkles },
   ];
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // If dropdown is open and click is outside both dropdown and sidebar
+      if (
+        dropdownOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen, setDropdownOpen, setOpen]);
+
   return (
-    <Sidebar className="fixed h-screen left-0 top-0 z-50" collapsible="icon">
+    <Sidebar
+      className="fixed h-screen left-0 top-0 z-50"
+      collapsible="icon"
+      ref={sidebarRef}
+    >
       {/* Header */}
       <SidebarHeader>
         <SidebarMenu>
@@ -144,7 +167,20 @@ export function SidebarShell({ session }: { session: any }) {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu>
+            <DropdownMenu
+              open={dropdownOpen}
+              onOpenChange={(isOpen) => {
+                setDropdownOpen(isOpen);
+                if (isOpen) {
+                  setOpen(true);
+                } else if (
+                  !sidebarRef.current?.contains(document.activeElement)
+                ) {
+                  // Only close sidebar if focus isn't moving to another element in sidebar
+                  setOpen(false);
+                }
+              }}
+            >
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton className="flex items-center gap-3 px-5 py-3 font-prompt whitespace-nowrap">
                   <img
@@ -162,6 +198,12 @@ export function SidebarShell({ session }: { session: any }) {
                 side="right"
                 align="start"
                 className="w-64 text-sm"
+                onInteractOutside={(event) => {
+                  // Prevent closing when clicking on sidebar
+                  if (sidebarRef.current?.contains(event.target as Node)) {
+                    event.preventDefault();
+                  }
+                }}
               >
                 {/* profile section */}
                 <div className="px-2 py-1.5">

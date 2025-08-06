@@ -31,7 +31,7 @@ export default async function UserProfilePage({
     const errorJson = await userJson.json();
     console.error("Failed to fetch user:", errorJson.error);
     return (
-      <div className="min-h-screen flex items-center justify-center min-w-screen font-prompt text-2xl bg-gradient-to-br from-zinc-900 to-zinc-800">
+      <div className="flex items-center justify-center min-w-screen font-prompt text-2xl bg-gradient-to-br from-zinc-900 to-zinc-800">
         We couldn't find this user :(
       </div>
     );
@@ -135,7 +135,7 @@ export default async function UserProfilePage({
 
       {/* MIDDLE: shards list */}
       <section className="flex-1 overflow-y-auto p-6 bg-zinc-900/90">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           {shards?.length ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {shards.map((shard: any) => (
@@ -173,7 +173,7 @@ export default async function UserProfilePage({
       </section>
 
       {/* RIGHT: recent activity */}
-      <aside className="w-80 border-l border-zinc-700/50 p-6 bg-zinc-900/95 sticky top-0 h-screen overflow-y-auto">
+      <aside className="w-80 border-l mr-6 border-zinc-700/50 p-6 bg-zinc-900/95 sticky top-0 h-screen overflow-y-auto">
         <div className="top-0 bg-zinc-900/95 pb-6 z-10">
           <h2 className="text-xl font-semibold flex items-center gap-2 text-lime-400">
             <Calendar size={20} className="text-lime-400" />

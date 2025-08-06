@@ -40,6 +40,8 @@ type SidebarContextProps = {
   setOpenMobile: (open: boolean) => void;
   isMobile: boolean;
   toggleSidebar: () => void;
+  dropdownOpen: boolean;
+  setDropdownOpen: (open: boolean) => void;
 };
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null);
@@ -68,6 +70,7 @@ function SidebarProvider({
 }) {
   const isMobile = useIsMobile();
   const [openMobile, setOpenMobile] = React.useState(false);
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
   const [_open, _setOpen] = React.useState(defaultOpen);
   const open = openProp ?? _open;
@@ -115,8 +118,19 @@ function SidebarProvider({
       openMobile,
       setOpenMobile,
       toggleSidebar,
+      dropdownOpen,
+      setDropdownOpen,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+    [
+      state,
+      open,
+      setOpen,
+      isMobile,
+      openMobile,
+      setOpenMobile,
+      toggleSidebar,
+      dropdownOpen,
+    ]
   );
 
   return (
@@ -156,7 +170,15 @@ function Sidebar({
   variant?: "sidebar" | "floating" | "inset";
   collapsible?: "offcanvas" | "icon" | "none";
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+  const {
+    isMobile,
+    state,
+    openMobile,
+    setOpenMobile,
+    open,
+    setOpen,
+    dropdownOpen,
+  } = useSidebar();
 
   if (collapsible === "none") {
     return (
@@ -231,6 +253,16 @@ function Sidebar({
           className
         )}
         {...props}
+        onMouseEnter={() => {
+          if (state === "collapsed" && collapsible === "icon") {
+            setOpen(true);
+          }
+        }}
+        onMouseLeave={() => {
+          if (state === "expanded" && collapsible === "icon" && !dropdownOpen) {
+            setOpen(false);
+          }
+        }}
       >
         <div
           data-sidebar="sidebar"
