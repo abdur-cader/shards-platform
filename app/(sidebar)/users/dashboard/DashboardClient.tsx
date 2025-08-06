@@ -1,5 +1,6 @@
 "use client";
 
+import { format } from "date-fns";
 import {
   Card,
   CardHeader,
@@ -120,7 +121,7 @@ export function DashboardClient({
                 variant="outline"
                 className="text-zinc-400 border-zinc-700"
               >
-                Joined {new Date(userData.created_at).toLocaleDateString()}
+                Joined {format(new Date(userData.created_at), "MMM d, yyyy")}
               </Badge>
               <Badge className="bg-lime-400/10 text-lime-400 hover:bg-lime-400/20 transition-all">
                 <Bolt className="h-3 w-3 mr-1" />
@@ -255,13 +256,7 @@ export function DashboardClient({
                             </div>
                           </TableCell>
                           <TableCell className="text-zinc-400">
-                            {new Date(shard.created_at).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "short",
-                                day: "numeric",
-                              }
-                            )}
+                            {format(new Date(shard.created_at), "MMM d")}
                           </TableCell>
                           <TableCell>
                             <Badge
@@ -353,10 +348,7 @@ export function DashboardClient({
                         tickLine={false}
                         axisLine={false}
                         tickFormatter={(value) =>
-                          new Date(value).toLocaleDateString("en-US", {
-                            day: "numeric",
-                            month: "short",
-                          })
+                          format(new Date(value), "MMM d")
                         }
                       />
                       <YAxis
@@ -376,7 +368,9 @@ export function DashboardClient({
                           value,
                           name === "likes" ? "Likes" : "Saves",
                         ]}
-                        labelFormatter={(label) => `Date: ${label}`}
+                        labelFormatter={(label) =>
+                          `Date: ${format(new Date(label), "MMM d, yyyy")}`
+                        }
                       />
                       <Area
                         type="monotone"
