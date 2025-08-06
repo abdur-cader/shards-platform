@@ -1,10 +1,7 @@
-// for getting all shards for a user (in profile page)
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { auth } from "@/auth";
 
 export async function GET(req: Request) {
-
     const token = req.headers.get("sb-access-token");
     const sessionId = req.headers.get("session-id");
 
@@ -27,11 +24,17 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: "Missing user_id" }, { status: 400 });
     }
 
-    console.log("session ID from called user API:", sessionId);
+    // Base query with counts
+    let query = supabase
+        .from("shards")
+        .select(`
+            *,
+            likes:likes(count),
+            saves:saves(count)
+        `)
+        .eq("user_id", userId);
 
-    let query = supabase.from("shards").select("*").eq("user_id", userId);
-
-    // If not owner, filter to only visible shards
+    // Add visibility filter for non-owners
     if (sessionId !== userId) {
         query = query.eq("is_visible", true);
     }
@@ -42,5 +45,12 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ shards: data });
+    // Transform the data to include flattened counts
+    const transformedData = data.map(shard => ({
+        ...shard,
+        likes_count: shard.likes[0]?.count || 0,
+        saves_count: shard.saves[0]?.count || 0
+    }));
+
+    return NextResponse.json({ shards: transformedData });
 }

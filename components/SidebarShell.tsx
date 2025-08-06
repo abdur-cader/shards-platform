@@ -44,7 +44,7 @@ export function SidebarShell({ session }: { session: any }) {
     { title: "Home", url: "/", icon: Home },
     {
       title: "Dashboard",
-      url: `/users/${session?.user?.username}/dashboard`,
+      url: `/users/dashboard`,
       icon: Gauge,
     },
     {
