@@ -286,7 +286,7 @@ export default async function ShardDetailPage({ params }: Props) {
               </h3>
               <HoverCard openDelay={200} closeDelay={100}>
                 <HoverCardTrigger asChild>
-                  <Link href={`/users/${shard.users.username}`}>
+                  <Link href={`/user/${shard.users.username}`}>
                     <div className="flex items-center gap-3 group cursor-pointer">
                       <Avatar className="h-12 w-12 border-2 border-zinc-600">
                         <AvatarImage src={shard.users.image || undefined} />
@@ -334,7 +334,7 @@ export default async function ShardDetailPage({ params }: Props) {
                         className="mt-3 bg-zinc-800/50 border-zinc-700 hover:bg-zinc-700/50 text-zinc-200"
                         asChild
                       >
-                        <Link href={`/users/${shard.users.username}`}>
+                        <Link href={`/user/${shard.users.username}`}>
                           View Profile
                         </Link>
                       </Button>

@@ -44,12 +44,12 @@ export function SidebarShell({ session }: { session: any }) {
     { title: "Home", url: "/", icon: Home },
     {
       title: "Dashboard",
-      url: `/users/dashboard`,
+      url: `/user/dashboard`,
       icon: Gauge,
     },
     {
       title: "Profile",
-      url: `/users/${session?.user?.username}`,
+      url: `/user/${session?.user?.username}`,
       icon: User,
     },
   ];
@@ -57,7 +57,7 @@ export function SidebarShell({ session }: { session: any }) {
   const shardItems = [
     { title: "Explore Shards", url: "/shards/explore", icon: BringToFront },
     { title: "Create Shard", url: "/shards/create", icon: PlusIcon },
-    { title: "AI Toolkit", url: "/shards", icon: Sparkles },
+    { title: "AI Toolkit", url: "/user/ai-toolkit", icon: Sparkles },
   ];
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export function SidebarShell({ session }: { session: any }) {
   return (
     <Sidebar
       className="fixed h-screen left-0 top-0 z-50"
-      collapsible="icon"
+      collapsible="icon"  
       ref={sidebarRef}
     >
       {/* Header */}

@@ -66,7 +66,7 @@ const Navbar = ({ className }: { className?: string }) => {
             item={session?.user?.name ?? "User"}
           >
             <div className="flex flex-col space-y-4 text-sm">
-              <HoveredLink href={`/users/${session?.user?.github_login}`}>
+              <HoveredLink href={`/user/${session?.user?.github_login}`}>
                 My Profile
               </HoveredLink>
               <HoveredLink href="/account">Account</HoveredLink>
