@@ -22,9 +22,10 @@ type Shard = {
 type ShardSelectorProps = {
   userId: string;
   accessToken?: string | null;
+  onShardSelect?: (shard: Shard) => void;
 };
 
-export default function ShardSelector({ userId, accessToken }: ShardSelectorProps) {
+export default function ShardSelector({ userId, accessToken, onShardSelect }: ShardSelectorProps) {
   const [shards, setShards] = useState<Shard[]>([]);
   const [selectedShard, setSelectedShard] = useState<Shard | null>(null);
   type Checked = DropdownMenuCheckboxItemProps["checked"];
@@ -62,10 +63,13 @@ export default function ShardSelector({ userId, accessToken }: ShardSelectorProp
         {shards.length > 0 ? (
           shards.map((shard) => (
             <DropdownMenuCheckboxItem
-              key={shard.id}
-              checked={selectedShard?.id === shard.id}
-              onCheckedChange={() => setSelectedShard(shard)}
-              className="flex justify-between items-center"
+                key={shard.id}
+                checked={selectedShard?.id === shard.id}
+                onCheckedChange={() => {
+                    setSelectedShard(shard);
+                    onShardSelect?.(shard);
+                }}
+                className="flex justify-between items-center"
             >
               <span className="truncate max-w-[120px]">{shard.title}</span>
               <div className="flex items-center gap-4 ml-4">
