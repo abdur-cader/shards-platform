@@ -21,7 +21,7 @@ const Dock = ({ slug }: Props) => {
             title: "Edit this Shard",
           },
           {
-            href: "/search",
+            href: "/user/ai-toolkit",
             icon: <Sparkles />,
             title: "AI Toolkit",
           },

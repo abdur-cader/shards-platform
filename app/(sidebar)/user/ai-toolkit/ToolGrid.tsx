@@ -16,7 +16,10 @@ export default function ToolGrid() {
   const handleCloseModal = () => setActiveModal(null);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+      {/* Subtle purple glow behind the grid */}
+      <div className="absolute inset-0 bg-purple-900/10 blur-xl rounded-full transform scale-125 -z-10"></div>
+      
       {tools.map((tool) => (
         <AiToolkitCard
           key={tool.slug}
@@ -39,9 +42,6 @@ export default function ToolGrid() {
       {activeModal === "competitive-angle" && (
         <CompetitiveAngleModal onClose={handleCloseModal} />
       )}
-      {/* {activeModal === "code-snippet-bootstrapper" && (
-        <CodeBootstrapperModal onClose={handleCloseModal} />
-      )} */}
     </div>
   );
 }

@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 ::selection {
-  background-color: rgb(160,228,4);
+  background-color: white/* rgb(160,228,4)*/;
   color: black;
 }
 
@@ -61,6 +61,19 @@
 }
 
 @theme inline {
+  --animate-aurora: aurora 60s linear infinite;
+  @keyframes aurora {
+    from {
+      background-position:
+        50% 50%,
+        50% 50%;
+    }
+    to {
+      background-position:
+        350% 50%,
+        350% 50%;
+    }
+  }
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -188,14 +201,20 @@
   }
 
   h1 {
-    @apply text-2xl font-bold py-2;
+    @apply text-4xl py-2;
   }
   h2 {
-    @apply text-xl font-bold py-2;
+    @apply text-2xl py-2;
   }
   h3 {
-    @apply text-lg font-bold py-2;
+    @apply text-xl py-2;
   }
+
+  .break-words {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
 
   /* tiptap tables */
   .tiptap table {

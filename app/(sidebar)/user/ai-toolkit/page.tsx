@@ -30,15 +30,15 @@ export default function AIToolkitPage() {
         background: `
           radial-gradient(
             circle at ${gradientPos.x}% ${gradientPos.y}%, 
-            rgba(109, 14, 218, 0.08) 0%, 
-            rgba(11, 16, 27, 0.95) 30%,
-            rgba(9, 3, 20, 0.08) 80%
+            rgba(139, 92, 246, 0.15) 0%, 
+            rgba(16, 22, 37, 0.95) 30%,
+            rgba(18, 11, 34, 0.95) 80%
           ),
           linear-gradient(
             to bottom right,
-            rgba(3, 7, 18, 1) 0%,
-            rgba(15, 23, 42, 1) 50%,
-            rgba(3, 7, 18, 1) 100%
+            rgba(15, 23, 42, 0.58) 0%,
+            rgba(30, 27, 75, 1) 50%,
+            rgba(15, 23, 42, 1) 100%
           )
         `
       }}

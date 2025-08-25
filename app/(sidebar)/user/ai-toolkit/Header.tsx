@@ -100,7 +100,7 @@ export default function Header() {
   return (
     <header className="flex justify-between items-center mb-12">
       <div>
-        <h1 className="text-4xl font-bold font-prompt bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-blue-500 tracking-tight">
+        <h1 className="text-4xl font-bold font-prompt bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-purple-600 tracking-tight drop-shadow-[0_0_15px_rgba(192,132,252,0.7)]">
           AI Toolkit
         </h1>
         <p className="text-gray-400 font-prompt mt-2 font-light">
@@ -108,18 +108,20 @@ export default function Header() {
         </p>
       </div>
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 bg-gray-800/80 border border-gray-700 rounded-full px-4 py-2 backdrop-blur-sm hover:bg-gray-700/80 transition-all duration-300">
-          <Zap className="w-5 h-5 text-indigo-400" />
+        <div className="flex items-center gap-2 bg-gray-800/80 border border-purple-500/30 rounded-full px-4 py-2 backdrop-blur-sm hover:bg-gray-700/80 transition-all duration-300 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40">
+          <Zap className="w-5 h-5 text-purple-400 drop-shadow-[0_0_8px_rgba(192,132,252,0.8)]" />
           {loading ? (
             <span className="font-medium">...</span>
           ) : (
-            <span className="font-medium">{credits !== null ? credits.toLocaleString() : 'N/A'}</span>
+            <span className="font-medium text-purple-200 drop-shadow-[0_0_5px_rgba(192,132,252,0.6)]">
+              {credits !== null ? credits.toLocaleString() : 'N/A'}
+            </span>
           )}
           <span className="text-gray-400 text-sm">credits remaining</span>
         </div>
         <Button
           variant="outline"
-          className="border-indigo-400/30 bg-indigo-400/10 hover:bg-indigo-400/20 text-indigo-400 hover:text-indigo-300 transition-all duration-300"
+          className="border-purple-500/40 bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 hover:text-purple-200 transition-all duration-300 shadow-md shadow-purple-500/20 hover:shadow-purple-500/40"
           onClick={handleAddCredits}
           disabled={loading}
         >

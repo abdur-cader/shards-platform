@@ -65,6 +65,7 @@ export default function ReadmeBuilderModal({ onClose }: { onClose: () => void })
           'Content-Type': 'application/json',
           'sb-access-token': session?.supabaseAccessToken!,
           'session-id': session?.user.id!,
+          'gh-access-token': session?.user.githubAccessToken!
         },
         body: JSON.stringify({
           shardId: selectedShard.id,
@@ -74,8 +75,28 @@ export default function ReadmeBuilderModal({ onClose }: { onClose: () => void })
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate README');
-      }
+  const errData = await response.json();
+  
+  let errMessage = "Failed to generate README";
+  
+  // Check if details is a string that contains JSON
+  if (errData.details && typeof errData.details === 'string') {
+    try {
+      // Try to parse the JSON string
+      const parsedDetails = JSON.parse(errData.details);
+      errMessage = parsedDetails.detail || errData.error || errMessage;
+    } catch {
+      // If parsing fails, use the string as is
+      errMessage = errData.details || errData.error || errMessage;
+    }
+  } else {
+    // If details is not a string, use it directly
+    errMessage = errData.details || errData.error || errMessage;
+  }
+  
+  toast.error(errMessage, {duration: 6000});
+  throw new Error(errMessage);
+}
 
       const result = await response.json();
       onClose();
@@ -83,7 +104,6 @@ export default function ReadmeBuilderModal({ onClose }: { onClose: () => void })
       toast.success('README generated successfully!');
     } catch (error) {
       console.error('Error generating README:', error);
-      toast.error('Failed to generate README. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -96,21 +116,21 @@ export default function ReadmeBuilderModal({ onClose }: { onClose: () => void })
         onClose();
       }
     }}>
-      <DialogContent className="min-w-4xl bg-gray-950 border border-gray-800/70 rounded-2xl font-prompt overflow-hidden backdrop-blur-sm shadow-2xl">
+      <DialogContent className="min-w-4xl bg-gray-950 border border-purple-500/30 rounded-2xl font-prompt overflow-hidden backdrop-blur-sm shadow-2xl shadow-purple-500/20">
         {/* Background elements */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-900/10 to-gray-950/80 opacity-20 pointer-events-none"></div>
-        <div className="absolute inset-0 overflow-hidden opacity-15">
-          <div className="absolute -top-20 -left-20 w-64 h-64 bg-emerald-500/5 rounded-full filter blur-3xl animate-float-slow"></div>
-          <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-purple-500/5 rounded-full filter blur-3xl animate-float-slow animation-delay-2000"></div>
-          <div className="absolute top-1/3 right-1/4 w-32 h-32 bg-amber-500/3 rounded-full filter blur-xl animate-float"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/15 to-gray-950/80 opacity-30 pointer-events-none"></div>
+        <div className="absolute inset-0 overflow-hidden opacity-20">
+          <div className="absolute -top-20 -left-20 w-64 h-64 bg-purple-500/10 rounded-full filter blur-3xl animate-float-slow"></div>
+          <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-purple-600/10 rounded-full filter blur-3xl animate-float-slow animation-delay-2000"></div>
+          <div className="absolute top-1/3 right-1/4 w-32 h-32 bg-purple-400/8 rounded-full filter blur-xl animate-float"></div>
         </div>
 
-        <DialogHeader className="relative z-10 border-b border-gray-800/50 pb-4">
+        <DialogHeader className="relative z-10 border-b border-purple-500/20 pb-4">
           <DialogTitle className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20">
-              <FileText className="w-6 h-6 text-white" />
+            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/30">
+              <FileText className="w-6 h-6 text-white drop-shadow-[0_0_5px_rgba(192,132,252,0.7)]" />
             </div>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-300 to-teal-400 font-semibold text-xl tracking-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-purple-400 font-semibold text-xl tracking-tight drop-shadow-[0_0_5px_rgba(192,132,252,0.4)]">
               README Builder
             </span>
           </DialogTitle>
@@ -118,7 +138,7 @@ export default function ReadmeBuilderModal({ onClose }: { onClose: () => void })
 
         <div className="relative z-10 py-6">
           <div className="space-y-8">
-            <div className="bg-gray-900/60 border border-gray-800/50 rounded-xl p-6 backdrop-blur-sm shadow-inner shadow-gray-900/50">
+            <div className="bg-gray-900/60 border border-purple-500/20 rounded-xl p-6 backdrop-blur-sm shadow-inner shadow-purple-900/30">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="space-y-4">
                   <div>
@@ -144,7 +164,7 @@ export default function ReadmeBuilderModal({ onClose }: { onClose: () => void })
                     </label>
                     <textarea
                       {...register("description")}
-                      className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all"
+                      className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all"
                       rows={3}
                       placeholder="Brief description of what your project does (min 40 chars if provided)..."
                     />
@@ -159,7 +179,7 @@ export default function ReadmeBuilderModal({ onClose }: { onClose: () => void })
                     </label>
                     <textarea
                       {...register("features")}
-                      className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all"
+                      className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all"
                       rows={3}
                       placeholder="List key features, one per line (min 40 chars if provided)..."
                     />
@@ -171,9 +191,9 @@ export default function ReadmeBuilderModal({ onClose }: { onClose: () => void })
               </form>
             </div>
 
-            <div className="flex justify-between items-center pt-6 border-t border-gray-800/50">
+            <div className="flex justify-between items-center pt-6 border-t border-purple-500/20">
               <div className="text-sm text-gray-400 font-medium">
-                <span className="text-emerald-400 font-semibold">1 credit</span> will be used
+                <span className="text-purple-400 font-semibold drop-shadow-[0_0_3px_rgba(192,132,252,0.4)]">1 credit</span> will be used
               </div>
               <div className="flex gap-3">
                 <Button
@@ -187,7 +207,7 @@ export default function ReadmeBuilderModal({ onClose }: { onClose: () => void })
                   Cancel
                 </Button>
                 <Button
-                  className="bg-gradient-to-br from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white transition-all px-8 shadow-lg hover:shadow-emerald-500/30 disabled:opacity-70 group"
+                  className="bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white transition-all px-8 shadow-lg hover:shadow-purple-500/40 disabled:opacity-70 group"
                   disabled={isLoading || !selectedShard}
                   onClick={handleSubmit(onSubmit)}
                 >

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   HoveredLink,
   Menu,
@@ -8,7 +9,7 @@ import {
 } from "@/components/ui/navbar-menu";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
-import { Github } from "lucide-react";
+import { Github, Link as LinkIcon } from "lucide-react";
 
 import { signIn, signOut } from "next-auth/react";
 import { toast } from "sonner";
@@ -25,6 +26,7 @@ const Navbar = ({ className }: { className?: string }) => {
       )}
     >
       <Menu setActive={setActive}>
+        <Link href="/pricing">Pricing</Link>
         <MenuItem setActive={setActive} active={active} item="Shards">
           <div className="flex flex-col space-y-4 text-sm">
             <HoveredLink href="/shards/explore">Explore Shards</HoveredLink>
@@ -63,7 +65,7 @@ const Navbar = ({ className }: { className?: string }) => {
           <MenuItem
             setActive={setActive}
             active={active}
-            item={session?.user?.name ?? "User"}
+            item={session?.user?.githubAccessToken ?? "User"}
           >
             <div className="flex flex-col space-y-4 text-sm">
               <HoveredLink href={`/user/${session?.user?.github_login}`}>

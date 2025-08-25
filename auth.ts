@@ -17,6 +17,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         GitHub({
             clientId: process.env.GITHUB_ID!,
             clientSecret: process.env.GITHUB_SECRET!,
+            authorization: { params: { scope: "read:user user:email repo", allow_signup: "true", prompt: "consent"} },
             profile(profile) {
                 return {
                     id: profile.id.toString(),
@@ -37,7 +38,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async session({ session, user }) {
             const { data, error } = await supabase
                 .from('users')
-                .select('bio, access_level, ai_credits, is_banned, settings, username')
+                .select('bio, access_level, ai_credits, is_banned, settings, username, githubAccessToken')
                 .eq('id', user.id)
                 .single();
 
@@ -48,6 +49,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 session.user.is_banned = data.is_banned;
                 session.user.settings = data.settings;
                 session.user.username = data.username;
+                session.user.githubAccessToken = data.githubAccessToken;
             } else {
                 console.log("NO DATA AVAILABLE:", error)
             }
@@ -61,20 +63,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
             console.log("AUTH CHECK=========================================================")
 
-            console.log("  1 user.id for JWT payload:", user.id);
-            console.log("  2 github login:", user.github_login);
-            console.log("  3 github id:", user.github_id);
-            console.log("  4 name:", user.name);
+            console.log("   1 user.id for JWT payload:", user.id);
+            console.log("   2 github login:", user.github_login);
+            console.log("   3 github id:", user.github_id);
+            console.log("   4 name:", user.name);
 
             console.log("END 1==================== SUPABASE ================================")
 
             if (data) {
-                console.log("  5 username:", data.username);
-                console.log("  6 bio:", data.bio);
-                console.log("  7 access_level:", data.access_level);
-                console.log("  8 ai_credits:", data.ai_credits);
-                console.log("  9 is_banned:", data.is_banned);
+                console.log("   5 username:", data.username);
+                console.log("   6 bio:", data.bio);
+                console.log("   7 access_level:", data.access_level);
+                console.log("   8 ai_credits:", data.ai_credits);
+                console.log("   9 is_banned:", data.is_banned);
                 console.log("  10 settings:", data.settings);
+                console.log("  11 GithubAccessToken:", data.githubAccessToken);
                 console.log("END ALL============================================================")
             }
 

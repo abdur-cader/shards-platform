@@ -26,10 +26,11 @@ export async function POST(request: Request) {
 
     const { shardId, description, features } = validation.data;
     const headersList = await headers();
-    const accessToken = headersList.get('sb-access-token');
+    const sbAccessToken = headersList.get('sb-access-token');
+    const ghAccessToken = headersList.get('gh-access-token')
     const userid = headersList.get('session-id');
     
-    if (!accessToken) {
+    if (!sbAccessToken) {
       return NextResponse.json(
         { error: 'Unauthorized - No access token provided' },
         { status: 401 }
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
       {
         global: {
           headers: {
-            Authorization: `Bearer ${accessToken}`
+            Authorization: `Bearer ${sbAccessToken}`
           }
         }
       }
@@ -92,7 +93,8 @@ export async function POST(request: Request) {
       metadata: {
         user_id: userid,
         project_name: shard.title // Assuming title exists in shard
-      }
+      },
+      github_token: ghAccessToken
     };
     console.log("WORKER_API_KEY seen by Next.js:", process.env.WORKER_API_KEY);
     // Call Python worker
@@ -110,14 +112,39 @@ export async function POST(request: Request) {
       console.error('Python worker error:', error);
       return NextResponse.json(
         { error: 'README generation failed', details: error },
-        { status: 500 }
+        { status: workerResponse.status }
       );
     }
 
     const workerData = await workerResponse.json();
-    console.log("WorkerData FULL:::::::::::::", workerData)
-    const { content } = workerData.readme_json;
 
+    // Debug log to see the actual structure
+    console.log("WorkerData FULL:::::::::::::", JSON.stringify(workerData, null, 2));
+
+    // Check if readme_json exists
+    if (!workerData.readme_json) {
+      console.error('Invalid response structure from worker - missing readme_json:', workerData);
+      return NextResponse.json(
+        { error: 'Invalid response from README generation service - missing readme_json' },
+        { status: 500 }
+      );
+    }
+
+    // The readme_json IS the content, not a wrapper with content property
+    const content = workerData.readme_json;
+
+    // Additional validation to ensure it's proper TipTap JSON
+    if (!content || typeof content !== 'object' || !content.type || content.type !== 'doc') {
+      console.error('Invalid TipTap JSON structure:', content);
+      return NextResponse.json(
+        { error: 'Invalid TipTap JSON format from README generation service' },
+        { status: 500 }
+      );
+    }
+
+    console.log("Content extracted successfully");
+    console.log("Content type:", content.type);
+  
     console.log("JSON::::::::::::::::::::::::::::::\n", JSON.stringify(content, null, 2))
 
     // Update shard with generated README

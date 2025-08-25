@@ -24,6 +24,7 @@ declare module "next-auth" {
             ai_credits?: number;
             is_banned?: boolean;
             settings?: Record<string, any>;
+            githubAccessToken?: string;
         } & DefaultSession["user"];
     }
 
@@ -32,5 +33,6 @@ declare module "next-auth" {
         id?: string;
         github_login?: string;
         github_id?: string;
+        githubAccessToken?: string;
     }
 }

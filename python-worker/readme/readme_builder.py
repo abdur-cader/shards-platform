@@ -1,0 +1,62 @@
+# readme_builder.py
+from models import ReadmeRequest
+from readme.github_service import fetch_repo_metadata, fetch_important_files, normalize_github_metadata, extract_code_snippets
+from readme.openai_service import generate_readme_from_context
+from readme.analysis_service import analyze_repository
+
+async def generate_readme(req: ReadmeRequest):
+    # Use the GitHub token from the request, fallback to env if not provided
+    github_token = req.github_token
+    
+    print(f"GitHub token received: {'Yes' if github_token else 'No'}")
+    if github_token:
+        print(f"Token length: {len(github_token)}")
+        print(f"Token preview: {github_token[:20]}...")
+    
+    # 1. Fetch repo metadata
+    raw_metadata = await fetch_repo_metadata(req.github_repo, github_token)
+    print("Metadata fetched!!!!!!!!!!")
+    
+    # Normalize metadata
+    normalized_metadata = normalize_github_metadata(raw_metadata)
+    print("Metadata normalized!!!!!!!!!!")
+    
+    # 2. Fetch important files
+    files = await fetch_important_files(req.github_repo, github_token)
+    print("Files fetched!!!!!!!!!!!!!!")
+    
+    # Extract code snippets
+    code_snippets = await extract_code_snippets(req.github_repo, files, github_token)
+    print("Code snippets extracted!!!!!!!!!!")
+    
+    # Analyze repository (for shards page feedback)
+    analysis_result = await analyze_repository(normalized_metadata, files)
+    print("Repository analysis completed!!!!!!!!!!")
+    
+    # 3. Build context for OpenAI (for README generation)
+    context = {
+        'repo_meta': raw_metadata,
+        'files': files,
+        'user_input': {
+            'description': req.user_input.description,
+            'features': req.user_input.features
+        },
+        'metadata': req.metadata.dict(),
+        'code_snippets': code_snippets,
+        'github_token': github_token,
+        'github_url': req.github_repo,
+        'clone_url': raw_metadata.get('clone_url', req.github_repo)
+    }
+    print("Context built with code snippets!!!!!!!!!")
+    
+    # 4. Generate README with OpenAI
+    readme_json = await generate_readme_from_context(context)
+    print("Readme json stored!!!!!!!!!!!!!!!!")
+    
+    # Return both README and analysis for different use cases
+    return {
+        "readme": readme_json,
+        "analysis": analysis_result,
+        "normalized_metadata": normalized_metadata,
+        "code_snippets_used": bool(code_snippets and code_snippets != "No code snippets could be extracted")
+    }

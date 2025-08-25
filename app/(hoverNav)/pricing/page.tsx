@@ -1,5 +1,6 @@
 import { Pricing } from '@/components/pricing'
 import React from 'react'
+import { AuroraBackground } from '@/components/ui/aurora-background';
 
 const page = () => {
 
@@ -59,9 +60,11 @@ const page = () => {
 
 
   return (
-      <div className="flex items-center justify-center h-screen pl-100 pr-100 pt-20">
-      <Pricing plans={shardPlans} title="Pricing" description="buy pls" />
-    </div>
+    <AuroraBackground>
+        <div className="flex items-center justify-center h-screen pl-100 pr-100 ">
+        <Pricing plans={shardPlans} title="Pricing" description="buy pls" />
+        </div>
+    </AuroraBackground>
   )
 }
 
