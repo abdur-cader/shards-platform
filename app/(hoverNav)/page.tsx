@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Navbar from "../../components/Navbar";
-import Hero from "@/components/HeroMain";
+import HeroMain from "@/components/HeroMain";
 import { InfoCard } from "@/components/InfoCard";
 import {
   Github,
@@ -11,16 +11,13 @@ import {
   TrendingUp,
   Search,
 } from "lucide-react";
-import { FlipWords } from "@/components/ui/flip-words";
-import { Separator } from "@/components/ui/separator";
 import FadeInOnScroll from "@/components/FadeInOnScroll";
-import HeroMain from "@/components/HeroMain";
 
 export default function Home() {
   const words = ["Share.", "Get feedback.", "Easily Discover.", "Improve."];
   return (
     <>
-      <HeroMain />
+        <HeroMain />
       <FadeInOnScroll>
         <section className="py-24 text-center bg-background">
           <h2 className="text-4xl font-prompt font-[400] mb-4">

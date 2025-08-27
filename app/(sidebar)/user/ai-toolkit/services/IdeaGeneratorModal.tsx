@@ -11,6 +11,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 // Zod schema for validation
 const ideaGeneratorSchema = z.object({
@@ -30,6 +32,8 @@ interface Idea {
 }
 
 export default function IdeaGeneratorModal({ onClose }: { onClose: () => void }) {
+  const { data: session } = useSession();
+
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof IdeaGeneratorFormData, string>>>({});
   const [formData, setFormData] = useState<IdeaGeneratorFormData>({
@@ -41,6 +45,7 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
   const [currentIdeaIndex, setCurrentIdeaIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [savedIdeaIds, setSavedIdeaIds] = useState<Set<number>>(new Set());
   const dialogRef = useRef<HTMLDivElement>(null);
 
   // Handle width transition when ideas are loaded
@@ -106,10 +111,11 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
       const result = await response.json();
       setIdeas(result.ideas);
       setCurrentIdeaIndex(0);
+      setSavedIdeaIds(new Set()); // Reset saved IDs when new ideas are generated
       
     } catch (error) {
       console.error('Error generating ideas:', error);
-      alert("Failed to generate ideas. Please try again.");
+      toast.error("Failed to generate ideas. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -120,12 +126,16 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
     
     setIsSaving(true);
     try {
+      const currentIdea = ideas[currentIdeaIndex];
+      
       const response = await fetch('/api/ai-toolkit/idea-generator/save', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'userid': session?.user?.id!,
+          'sb-access-token': session?.supabaseAccessToken!
         },
-        body: JSON.stringify(ideas[currentIdeaIndex]),
+        body: JSON.stringify(currentIdea),
       });
 
       if (!response.ok) {
@@ -133,10 +143,13 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
       }
 
       const result = await response.json();
-      alert("Idea saved successfully!");
+      
+      // Add the saved idea ID to the set
+      setSavedIdeaIds(prev => new Set(prev).add(currentIdea.id));
+      toast.success("Idea saved successfully!");
     } catch (error) {
       console.error('Error saving idea:', error);
-      alert("Failed to save idea. Please try again.");
+      toast.error("Failed to save idea. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -159,31 +172,41 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
     
     const ideaText = `Idea: ${ideas[currentIdeaIndex].title}\nDescription: ${ideas[currentIdeaIndex].description}\nEstimated Completion: ${ideas[currentIdeaIndex].estimatedTime}`;
     navigator.clipboard.writeText(ideaText);
-    alert("Idea copied to clipboard!");
+    toast.success("Idea copied to clipboard!");
   };
 
   const handleReset = () => {
     setIdeas([]);
     setCurrentIdeaIndex(0);
+    setSavedIdeaIds(new Set());
   };
 
   const isLastIdea = currentIdeaIndex === ideas.length - 1;
+  const currentIdea = ideas[currentIdeaIndex];
+  const isIdeaSaved = currentIdea && savedIdeaIds.has(currentIdea.id);
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent 
         ref={dialogRef}
-        className={`bg-gray-800/95 border-gray-700 rounded-xl font-prompt overflow-hidden backdrop-blur-sm transition-all duration-500 ${
+        className={`bg-gray-950 border border-purple-500/30 rounded-2xl font-prompt overflow-hidden backdrop-blur-sm shadow-2xl shadow-purple-500/20 transition-all duration-500 ${
           isExpanded ? "max-w-4xl" : "max-w-3xl"
         }`}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/5 to-blue-500/5 opacity-30 pointer-events-none transition-opacity duration-500"></div>
-        <DialogHeader className="relative z-10 border-b border-gray-700 pb-4 transition-colors duration-300">
+        {/* Background elements - matching ReadmeBuilderModal */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/15 to-gray-950/80 opacity-30 pointer-events-none"></div>
+        <div className="absolute inset-0 overflow-hidden opacity-20">
+          <div className="absolute -top-20 -left-20 w-64 h-64 bg-purple-500/10 rounded-full filter blur-3xl animate-float-slow"></div>
+          <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-purple-600/10 rounded-full filter blur-3xl animate-float-slow animation-delay-2000"></div>
+          <div className="absolute top-1/3 right-1/4 w-32 h-32 bg-purple-400/8 rounded-full filter blur-xl animate-float"></div>
+        </div>
+
+        <DialogHeader className="relative z-10 border-b border-purple-500/20 pb-4 transition-colors duration-300">
           <DialogTitle className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-indigo-400/10 transition-all duration-300 hover:bg-indigo-400/20">
-              <Brain className="w-6 h-6 text-indigo-400 transition-transform duration-300 hover:scale-110" />
+            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/30">
+              <Brain className="w-6 h-6 text-white drop-shadow-[0_0_5px_rgba(192,132,252,0.7)]" />
             </div>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-blue-500 transition-all duration-500">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-purple-400 font-semibold text-xl tracking-tight drop-shadow-[0_0_5px_rgba(192,132,252,0.4)]">
               Idea Generator
             </span>
           </DialogTitle>
@@ -198,7 +221,7 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
                     <div className="space-y-2 transition-all duration-300">
                       <Label className="text-gray-300 transition-colors duration-300">Topic or Interest</Label>
                       <Input
-                        className="bg-gray-700 border-gray-600 focus:border-indigo-400/50 focus:ring-indigo-400/30 hover:border-gray-500 transition-all duration-300 break-words"
+                        className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all"
                         placeholder="e.g., AI tools for developers, machine learning applications, etc."
                         value={formData.topic}
                         onChange={(e) => handleInputChange('topic', e.target.value)}
@@ -210,7 +233,7 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
                     <div className="space-y-2 transition-all duration-300">
                       <Label className="text-gray-300 transition-colors duration-300">Your Skills</Label>
                       <Input
-                        className="bg-gray-700 border-gray-600 focus:border-indigo-400/50 focus:ring-indigo-400/30 hover:border-gray-500 transition-all duration-300 break-words"
+                        className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all"
                         placeholder="e.g., React, Python, Machine Learning, JavaScript, etc."
                         value={formData.skills}
                         onChange={(e) => handleInputChange('skills', e.target.value)}
@@ -222,7 +245,7 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
                     <div className="space-y-2 transition-all duration-300">
                       <Label className="text-gray-300 transition-colors duration-300">Project Complexity</Label>
                       <select 
-                        className="flex h-10 w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-400/50 focus:border-indigo-400/50 hover:border-gray-500 transition-all duration-300"
+                        className="flex h-10 w-full rounded-md border border-gray-700 bg-gray-800/50 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all"
                         value={formData.complexity}
                         onChange={(e) => handleInputChange('complexity', e.target.value)}
                       >
@@ -235,22 +258,22 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center pt-4 border-t border-gray-700 transition-all duration-300">
+                <div className="flex justify-between items-center pt-4 border-t border-purple-500/20 transition-all duration-300">
                   <div className="text-sm text-gray-400 transition-colors duration-300">
-                    This will use 1 credit
+                    <span className="text-purple-400 font-semibold drop-shadow-[0_0_3px_rgba(192,132,252,0.4)]">1 credit</span> will be used
                   </div>
                   <div className="flex gap-2 transition-all duration-300">
                     <Button
                       type="button"
                       variant="outline"
-                      className="border-gray-600 hover:bg-gray-700 hover:border-gray-500 transition-all duration-300"
+                      className="border-gray-700 bg-gray-900 hover:bg-gray-800 hover:border-gray-600 transition-all px-6 hover:text-white text-gray-300"
                       onClick={onClose}
                     >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
-                      className="bg-indigo-500 hover:bg-indigo-400 text-white transition-all duration-300"
+                      className="bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white transition-all px-8 shadow-lg hover:shadow-purple-500/40 disabled:opacity-70"
                       disabled={isLoading}
                     >
                       {isLoading ? "Processing..." : "Generate Ideas"}
@@ -263,12 +286,12 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
         ) : (
           <div className="relative z-10 py-4 transition-all duration-300">
             <div className="space-y-6">
-              <div className="bg-gray-700/50 rounded-lg p-6 border border-gray-600 transition-all duration-300">
+              <div className="bg-gray-900/60 border border-purple-500/20 rounded-xl p-6 backdrop-blur-sm shadow-inner shadow-purple-900/30 transition-all duration-300">
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-xl font-semibold text-white break-words">
                     {ideas[currentIdeaIndex].title}
                   </h3>
-                  <div className="text-sm text-indigo-400 bg-indigo-400/10 px-2 py-1 rounded">
+                  <div className="text-sm text-purple-400 bg-purple-400/10 px-2 py-1 rounded drop-shadow-[0_0_3px_rgba(192,132,252,0.3)]">
                     {ideas[currentIdeaIndex].estimatedTime}
                   </div>
                 </div>
@@ -283,19 +306,19 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-gray-600 hover:bg-gray-600 hover:border-gray-500 transition-all duration-300"
+                      className="border-gray-700 bg-gray-900 hover:bg-gray-800 hover:border-gray-600 transition-all hover:text-white text-gray-300"
                       onClick={handleCopy}
                     >
                       <Copy className="w-4 h-4 mr-2" />
                       Copy
                     </Button>
                     <Button
-                      className="bg-indigo-500 hover:bg-indigo-400 text-white transition-all duration-300"
+                      className="bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white transition-all shadow-lg hover:shadow-purple-500/40 disabled:opacity-70"
                       onClick={handleSave}
-                      disabled={isSaving}
+                      disabled={isSaving || isIdeaSaved}
                     >
                       <Save className="w-4 h-4 mr-2" />
-                      {isSaving ? "Saving..." : "Save"}
+                      {isIdeaSaved ? "Saved" : isSaving ? "Saving..." : "Save"}
                     </Button>
                   </div>
                 </div>
@@ -304,7 +327,7 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
               <div className="flex justify-center items-center gap-2 pt-2">
                 <Button
                   variant="outline"
-                  className="border-gray-600 hover:bg-gray-700 hover:border-gray-500 transition-all duration-300"
+                  className="border-gray-700 bg-gray-900 hover:bg-gray-800 hover:border-gray-600 transition-all hover:text-white text-gray-300"
                   onClick={handlePrevious}
                   disabled={currentIdeaIndex === 0}
                 >
@@ -314,7 +337,7 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
                 
                 <Button
                   variant="outline"
-                  className="border-gray-600 hover:bg-gray-700 hover:border-gray-500 transition-all duration-300"
+                  className="border-gray-700 bg-gray-900 hover:bg-gray-800 hover:border-gray-600 transition-all hover:text-white text-gray-300"
                   onClick={onClose}
                 >
                   <X className="w-4 h-4 mr-2" />
@@ -324,7 +347,7 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
                 {isLastIdea && (
                   <Button
                     variant="outline"
-                    className="border-gray-600 hover:bg-gray-700 hover:border-gray-500 transition-all duration-300"
+                    className="border-gray-700 bg-gray-900 hover:bg-gray-800 hover:border-gray-600 transition-all hover:text-white text-gray-300"
                     onClick={handleReset}
                   >
                     <Brain className="w-4 h-4 mr-2" />
@@ -334,7 +357,7 @@ export default function IdeaGeneratorModal({ onClose }: { onClose: () => void })
                 
                 <Button
                   variant="outline"
-                  className="border-gray-600 hover:bg-gray-700 hover:border-gray-500 transition-all duration-300"
+                  className="border-gray-700 bg-gray-900 hover:bg-gray-800 hover:border-gray-600 transition-all hover:text-white text-gray-300"
                   onClick={handleNext}
                   disabled={currentIdeaIndex === ideas.length - 1}
                 >
