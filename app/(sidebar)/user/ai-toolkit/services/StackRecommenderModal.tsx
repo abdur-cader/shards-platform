@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Copy, Code, ArrowLeft, Save, X, Check } from "lucide-react"; // Added Check icon
+import { Copy, Code, ArrowLeft, Save, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -66,14 +66,136 @@ function StackRecommenderForm({
   );
 }
 
+function RecommendationDisplay({ recommendation }: { recommendation: any }) {
+  if (!recommendation) return null;
+
+  // Helper function to check if a value should be treated as an object
+  const isObject = (value: any) => {
+    return value && typeof value === 'object' && !Array.isArray(value);
+  };
+
+  // Helper function to check if a value is a simple string
+  const isSimpleString = (value: any) => {
+    return typeof value === 'string' && !value.includes('{') && !value.includes('[');
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Frontend Section */}
+      {recommendation.frontend && (
+        <div className="bg-gray-900/60 border border-purple-500/20 rounded-xl p-5 backdrop-blur-sm shadow-inner shadow-purple-900/30">
+          <h3 className="text-lg font-semibold text-purple-300 mb-3 flex items-center">
+            <span className="w-2 h-2 rounded-full bg-purple-500 mr-2"></span>
+            Frontend
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {isObject(recommendation.frontend) ? (
+              Object.entries(recommendation.frontend).map(([key, value]) => (
+                <div key={key} className="bg-gray-800/40 p-3 rounded-lg">
+                  <h4 className="text-sm font-medium text-gray-400 capitalize">{key.replace(/([A-Z])/g, ' $1')}</h4>
+                  <p className="text-white font-medium mt-1">{String(value)}</p>
+                </div>
+              ))
+            ) : (
+              <div className="bg-gray-800/40 p-3 rounded-lg col-span-full">
+                <p className="text-white font-medium">{String(recommendation.frontend)}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Backend Section */}
+      {recommendation.backend && (
+        <div className="bg-gray-900/60 border border-purple-500/20 rounded-xl p-5 backdrop-blur-sm shadow-inner shadow-purple-900/30">
+          <h3 className="text-lg font-semibold text-purple-300 mb-3 flex items-center">
+            <span className="w-2 h-2 rounded-full bg-purple-500 mr-2"></span>
+            Backend
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {isObject(recommendation.backend) ? (
+              Object.entries(recommendation.backend).map(([key, value]) => (
+                <div key={key} className="bg-gray-800/40 p-3 rounded-lg">
+                  <h4 className="text-sm font-medium text-gray-400 capitalize">{key.replace(/([A-Z])/g, ' $1')}</h4>
+                  <p className="text-white font-medium mt-1">{String(value)}</p>
+                </div>
+              ))
+            ) : (
+              <div className="bg-gray-800/40 p-3 rounded-lg col-span-full">
+                <p className="text-white font-medium">{String(recommendation.backend)}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Database Section */}
+      {recommendation.database && (
+        <div className="bg-gray-900/60 border border-purple-500/20 rounded-xl p-5 backdrop-blur-sm shadow-inner shadow-purple-900/30">
+          <h3 className="text-lg font-semibold text-purple-300 mb-3 flex items-center">
+            <span className="w-2 h-2 rounded-full bg-purple-500 mr-2"></span>
+            Database
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {isObject(recommendation.database) ? (
+              Object.entries(recommendation.database).map(([key, value]) => (
+                <div key={key} className="bg-gray-800/40 p-3 rounded-lg">
+                  <h4 className="text-sm font-medium text-gray-400 capitalize">{key.replace(/([A-Z])/g, ' $1')}</h4>
+                  <p className="text-white font-medium mt-1">{String(value)}</p>
+                </div>
+              ))
+            ) : (
+              <div className="bg-gray-800/40 p-3 rounded-lg col-span-full">
+                <p className="text-white font-medium">{String(recommendation.database)}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Additional Sections */}
+      {Object.entries(recommendation)
+      .filter(([key]) => !['frontend', 'backend', 'database'].includes(key))
+      .map(([section, data]) => {
+        // Check if data is an object (but not null or array)
+        const isDataObject = typeof data === 'object' && data !== null && !Array.isArray(data);
+        
+        return (
+          <div key={section} className="bg-gray-900/60 border border-purple-500/20 rounded-xl p-5 backdrop-blur-sm shadow-inner shadow-purple-900/30">
+            <h3 className="text-lg font-semibold text-purple-300 mb-3 flex items-center">
+              <span className="w-2 h-2 rounded-full bg-purple-500 mr-2"></span>
+              {section.charAt(0).toUpperCase() + section.slice(1)}
+            </h3>
+            {isDataObject ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(data).map(([key, value]) => (
+                  <div key={key} className="bg-gray-800/40 p-3 rounded-lg">
+                    <h4 className="text-sm font-medium text-gray-400 capitalize">{key.replace(/([A-Z])/g, ' $1')}</h4>
+                    <p className="text-white font-medium mt-1">{String(value)}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-gray-800/40 p-3 rounded-lg">
+                <p className="text-white font-medium">{String(data)}</p>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function StackRecommenderModal({ onClose }: { onClose: () => void }) {
   const [isLoading, setIsLoading] = useState(false);
-  const [recommendation, setRecommendation] = useState<string | null>(null);
+  const [recommendation, setRecommendation] = useState<any>(null);
+  const [rawRecommendation, setRawRecommendation] = useState<string | null>(null);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [isSaving, setIsSaving] = useState(false); // Added saving state
-  const [isSaved, setIsSaved] = useState(false); // Added saved state
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const [formData, setFormData] = useState({
     projectType: '',
     requirements: '',
@@ -85,6 +207,7 @@ export default function StackRecommenderModal({ onClose }: { onClose: () => void
     // Reset state when modal opens
     return () => {
       setRecommendation(null);
+      setRawRecommendation(null);
       setIsLoading(false);
     };
   }, []);
@@ -102,19 +225,27 @@ export default function StackRecommenderModal({ onClose }: { onClose: () => void
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'userid': session?.user?.id!,
+          'sb-access-token': session?.supabaseAccessToken!
         },
         body: JSON.stringify(formData),
       });
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate stack recommendation');
+        if (errorData.error === 'insufficient_credits') {
+          toast.error("You've run out of AI credits. Please upgrade your plan or wait until your credits refresh on the next billing cycle.", { duration: 15000});
+        } else {
+          throw new Error(errorData.error || 'Failed to generate stack recommendation');
+        }
+        return;
       }
       
       const data = await response.json();
-      setRecommendation(JSON.stringify(data, null, 2));
+      setRecommendation(data);
+      setRawRecommendation(JSON.stringify(data, null, 2));
       setHasUnsavedChanges(true);
-      setIsSaved(false); // Reset saved state when new recommendation is generated
+      setIsSaved(false);
     } catch (error) {
       console.error('Error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to generate stack recommendation');
@@ -124,7 +255,7 @@ export default function StackRecommenderModal({ onClose }: { onClose: () => void
   };
 
   const handleSave = async () => {
-    if (!recommendation || isSaved) return;
+    if (!rawRecommendation || isSaved) return;
     
     setIsSaving(true);
     
@@ -137,7 +268,7 @@ export default function StackRecommenderModal({ onClose }: { onClose: () => void
           'user-id': session?.user?.id!
         },
         body: JSON.stringify({
-          object: JSON.parse(recommendation),
+          object: JSON.parse(rawRecommendation),
         }),
       });
       
@@ -149,7 +280,7 @@ export default function StackRecommenderModal({ onClose }: { onClose: () => void
       const data = await response.json();
       toast.success('Stack recommendation saved successfully!');
       setHasUnsavedChanges(false);
-      setIsSaved(true); // Mark as saved
+      setIsSaved(true);
     } catch (error) {
       console.error('Error saving recommendation:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to save stack recommendation');
@@ -159,8 +290,9 @@ export default function StackRecommenderModal({ onClose }: { onClose: () => void
   };
 
   const handleCopy = () => {
-    if (recommendation) {
-      navigator.clipboard.writeText(recommendation);
+    if (rawRecommendation) {
+      navigator.clipboard.writeText(rawRecommendation);
+      toast.success("Copied to clipboard!");
     }
   };
 
@@ -200,7 +332,7 @@ export default function StackRecommenderModal({ onClose }: { onClose: () => void
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-w-5xl bg-gray-950 border border-purple-500/30 rounded-2xl font-prompt overflow-hidden backdrop-blur-sm shadow-2xl shadow-purple-500/20">
+        <DialogContent className="max-w-6xl min-w-2xl  p-5 bg-gray-950 border border-purple-500/30 rounded-2xl font-prompt overflow-hidden backdrop-blur-sm shadow-2xl shadow-purple-500/20">
           {/* Background elements */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/15 to-gray-950/80 opacity-30 pointer-events-none"></div>
           <div className="absolute inset-0 overflow-hidden opacity-20">
@@ -227,7 +359,6 @@ export default function StackRecommenderModal({ onClose }: { onClose: () => void
 
                 <div className="flex justify-between items-center pt-4 border-t border-purple-500/20">
                   <div className="text-sm text-gray-400">
-                    <span className="text-purple-400 font-semibold drop-shadow-[0_0_3px_rgba(192,132,252,0.4)]">1 credit</span> will be used
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -259,13 +390,12 @@ export default function StackRecommenderModal({ onClose }: { onClose: () => void
                       onClick={handleCopy}
                     >
                       <Copy className="w-4 h-4 mr-2" />
-                      Copy
+                      Copy JSON
                     </Button>
                   </div>
-                  <div className="bg-gray-900/60 border border-purple-500/20 rounded-xl p-6 backdrop-blur-sm shadow-inner shadow-purple-900/30 max-h-96 overflow-auto transition-all">
-                    <pre className="text-sm text-gray-300 whitespace-pre-wrap">
-                      {recommendation}
-                    </pre>
+                  
+                  <div className="max-h-[50vh] overflow-y-auto">
+                    <RecommendationDisplay recommendation={recommendation} />
                   </div>
                 </div>
                 
@@ -285,7 +415,7 @@ export default function StackRecommenderModal({ onClose }: { onClose: () => void
                     <Button
                       className="bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white transition-all px-8 shadow-lg hover:shadow-purple-500/40 disabled:opacity-70"
                       onClick={handleSave}
-                      disabled={isSaving || isSaved} // Disable when saving or already saved
+                      disabled={isSaving || isSaved}
                     >
                       {isSaving ? (
                         <>
@@ -313,11 +443,14 @@ export default function StackRecommenderModal({ onClose }: { onClose: () => void
 
       {/* Close Confirmation Dialog */}
       <AlertDialog open={showCloseConfirm} onOpenChange={setShowCloseConfirm}>
-        <AlertDialogContent className="bg-gray-950 border border-purple-500/30">
+        <AlertDialogContent className="bg-gray-950 border border-red-500/30 rounded-2xl font-prompt backdrop-blur-sm shadow-2xl shadow-red-500/20">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-300">Close Stack Recommender?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
-              Any unsaved changes will be lost and used credits will not be restored. Are you sure you want to close?
+            <AlertDialogTitle className="text-red-400 flex items-center gap-2">
+              <X className="w-5 h-5" />
+              Close Stack Recommender?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-300 mt-2">
+              Any unsaved changes will be lost. Are you sure you want to close?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -328,7 +461,7 @@ export default function StackRecommenderModal({ onClose }: { onClose: () => void
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction 
-              className="bg-purple-600 hover:bg-purple-700 text-white"
+              className="bg-red-600 hover:bg-red-700 text-white"
               onClick={confirmClose}
             >
               Confirm

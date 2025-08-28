@@ -9,10 +9,18 @@ import * as THREE from "three";
 
 export default function AIToolkitPage() {
   const [gradientPos, setGradientPos] = useState({ x: 50, y: 50 });
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) {
+      console.log("NO SESSION DETECTED");
+      router.push("/"); // now it works
+    }
+  }, [session, router]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -157,7 +165,18 @@ export default function AIToolkitPage() {
     };
   }, []);
 
-  return (
+  if (!session && status !== "loading") {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 w-screen text-white">
+        <p className="text-lg">
+          Log In or Sign Up to view this page.
+        </p>
+        <p className="text-sm text-gray-400">Redirecting...</p>
+      </div>
+    );
+  }
+
+  return ( 
     <div className="min-h-screen min-w-screen text-gray-100 relative overflow-hidden">
       {/* Shader Animation Background */}
       <div 

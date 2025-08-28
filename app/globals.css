@@ -537,3 +537,25 @@
   background-repeat: no-repeat;
   animation: radialOrbit 15s ease-in-out infinite;
 }
+
+@keyframes glowBeams {
+  0%, 100% {
+    background-position: 20% 30%, 70% 20%, 50% 80%, 80% 70%;
+    opacity: 0.3;
+  }
+  50% {
+    background-position: 25% 25%, 65% 15%, 55% 75%, 75% 65%;
+    opacity: 0.5;
+  }
+}
+
+.animate-glow-beams {
+  background:
+    radial-gradient(circle at 20% 30%, rgba(118, 187, 14, 0.4) 0%, transparent 60%),
+    radial-gradient(circle at 70% 20%, rgba(118, 187, 14, 0.3) 0%, transparent 60%),
+    radial-gradient(circle at 50% 80%, rgba(118, 187, 14, 0.35) 0%, transparent 60%),
+    radial-gradient(circle at 80% 70%, rgba(118, 187, 14, 0.25) 0%, transparent 60%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  animation: glowBeams 20s ease-in-out infinite alternate;
+}

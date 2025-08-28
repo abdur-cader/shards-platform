@@ -27,36 +27,40 @@ export function ShaderAnimation() {
 
     // Fragment shader
     const fragmentShader = `
-        #define TWO_PI 6.2831853072
-        #define PI 3.14159265359
-
         precision highp float;
         uniform vec2 resolution;
         uniform float time;
 
         void main(void) {
-        vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
-        float t = time*0.05;
-        float lineWidth = 0.002;
+          vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
+          float t = time * 0.05;
+          float lineWidth = 0.002;
 
-        float intensity = 0.0;
-        for(int j = 0; j < 3; j++){
-            for(int i=0; i < 5; i++){
-            intensity += lineWidth*float(i*i) / abs(fract(t - 0.01*float(j)+float(i)*0.01)*5.0 - length(uv) + mod(uv.x+uv.y, 0.2));
-            }
+          float intensity = 0.0;
+          for(int j = 0; j < 3; j++){
+              for(int i=0; i < 5; i++){
+                intensity += lineWidth*float(i*i) /
+                  abs(fract(t - 0.01*float(j)+float(i)*0.01)*5.0 - length(uv) + mod(uv.x+uv.y, 0.2));
+              }
+          }
+
+          // lime-ish wave
+          vec3 lime = vec3(0.7, 1.0, 0.3);
+          vec3 waveColor = lime * intensity;
+
+          // deep purple background closer to #0f0524
+          vec3 basePurple = vec3(0.06, 0.02, 0.14); // ~#0f0524
+          vec3 brighterPurple = vec3(0.1, 0.03, 0.2); // slightly brighter version
+          vec3 purple = mix(basePurple, brighterPurple, uv.y * 0.5 + 0.5);
+
+          // fade purple only where wave isn't strong
+          float fade = smoothstep(0.0, 0.5, 1.0 - intensity * 2.0);
+          vec3 bg = purple * fade;
+
+          vec3 color = bg + waveColor;
+
+          gl_FragColor = vec4(color, 1.0);
         }
-
-        // lime-ish base color
-        vec3 lime = vec3(0.7, 1.0, 0.3);
-
-        // scale lime by intensity
-        vec3 color = lime * intensity;
-
-        // add a subtle dark gray ambient background so it’s never pure black
-        vec3 ambient = vec3(0.05);
-        gl_FragColor = vec4(color + ambient, 1.0);
-        }
-
     `
 
     // Initialize Three.js scene
@@ -144,7 +148,7 @@ export function ShaderAnimation() {
       ref={containerRef}
       className="w-full h-screen"
       style={{
-        background: "#000",
+        background: "#0f0524",
         overflow: "hidden",
       }}
     />

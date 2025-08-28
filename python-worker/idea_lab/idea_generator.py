@@ -57,7 +57,7 @@ class IdeaGenerator:
                 }}
             ]
             }}
-            - You may suggest ideas that involve technologies not listed in the user’s skills. If additional skills are required,
+            - You may suggest ideas that involve technologies not listed in the user's skills. If additional skills are required,
             explicitly mention them in the description using the format: *Requires [Skill]*.
             
             - Avoid generic or overused ideas (e.g., to-do apps, calculators, blog platforms). Only suggest unique, creative projects
@@ -65,20 +65,18 @@ class IdeaGenerator:
         """
         return prompt
 
-    def generate_ideas(self, topic: str, skills: str, complexity: ComplexityLevel) -> List[Dict[str, Any]]:
+    def generate_ideas(self, topic: str, skills: str, complexity: ComplexityLevel, max_tokens: int) -> Dict[str, Any]:
         print("idea_generator: func generate_ideas begun")
         prompt = self._build_prompt(topic, skills, complexity)
         print("Prompt generated")
         
         response = self.client.chat.completions.create(
             model="gpt-4o-mini",
-            # This is the key fix: It forces the model to return valid JSON.
-            response_format={"type": "json_object"}, 
+            response_format={"type": "json_object"},
             messages=[
                 {
                     "role": "system",
                     "content": (
-                        # This updated message works better with JSON mode.
                         "You are a helpful assistant designed to output JSON. "
                         "Generate software project ideas based on the user's prompt. "
                         "Your entire output must be a single, valid JSON object with an 'ideas' key, "
@@ -91,10 +89,19 @@ class IdeaGenerator:
                 },
             ],
             temperature=0.7,
+            max_tokens=max_tokens
         )
 
         content = response.choices[0].message.content
         print("Response stored")
+        
+        # Check if response was truncated due to token limit
+        if response.choices[0].finish_reason == "length":
+            return {
+                "error": "insufficient_credits",
+                "message": "Not enough AI credits to complete the generation"
+            }
+        
         # This line will now reliably parse the JSON content.
         ideas_data = json.loads(content)
         print("Response converted to JSON")
@@ -104,4 +111,7 @@ class IdeaGenerator:
             idea["id"] = i + 1
         print("IDs indexed")
 
-        return ideas_data.get("ideas", [])
+        return {
+            "ideas": ideas_data.get("ideas", []),
+            "used_credits": response.usage.total_tokens if response.usage else 0
+        }

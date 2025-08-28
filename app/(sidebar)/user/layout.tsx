@@ -1,8 +1,8 @@
 import AppSidebar from "@/components/app-sidebar";
 import { Toaster } from "sonner";
-import { Hind_Siliguri } from "next/font/google";
-import { Prompt } from "next/font/google";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Hind_Siliguri, Prompt } from "next/font/google";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { auth } from "@/auth";
 
 const PromptFont = Prompt({
   subsets: ["latin"],
@@ -16,13 +16,16 @@ const HindFont = Hind_Siliguri({
   variable: "--font-hind",
 });
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({ children }: { children: React.ReactNode }) {
+  const session = await auth(); // fetch session server-side
+
   return (
     <main
       className={`${PromptFont.className} ${HindFont.className} h-screen overflow-hidden`}
     >
       <SidebarProvider>
-        <AppSidebar />
+        {/* only show sidebar if session exists */}
+        {session && <AppSidebar />}
 
         <div className="flex flex-col h-full">
           <div className="flex-1 overflow-y-hidden">{children}</div>

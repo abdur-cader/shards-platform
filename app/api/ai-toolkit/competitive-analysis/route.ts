@@ -1,17 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
 import { createClient } from '@supabase/supabase-js';
 
-// Reuse the same schema for server-side validation
-const ideaGeneratorSchema = z.object({
-  topic: z.string().min(5, "Topic must be at least 20 characters long"),
-  skills: z.string().min(5, "Skills must be at least 20 characters long"),
-  complexity: z.enum(["beginner", "intermediate", "advanced", "any"])
-});
+// Define the expected request body structure
+interface CompetitiveAnalysisRequest {
+  projectDescription: string;
+  competitors?: string;
+  targetAudience?: string;
+}
+
+// Define the response structure
+interface CompetitiveAnalysisResponse {
+  uniqueValueProposition: string[];
+  competitiveAdvantages: string[];
+  targetAudienceAlignment: string;
+  recommendedPositioning: string;
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body: CompetitiveAnalysisRequest = await request.json();
     const userId = request.headers.get('userid');
     const supabaseAccessToken = request.headers.get('sb-access-token');
     
@@ -21,18 +28,17 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
-
-    // Validate the request body
-    const validationResult = ideaGeneratorSchema.safeParse(body);
     
-    if (!validationResult.success) {
+    const { projectDescription, competitors, targetAudience } = body;
+    
+    // Validate required fields
+    if (!projectDescription) {
       return NextResponse.json(
-        { error: 'Invalid input data', details: validationResult.error.errors },
+        { error: 'Project description is required' },
         { status: 400 }
       );
     }
 
-    // Get user's AI credits from Supabase
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -66,36 +72,44 @@ export async function POST(request: NextRequest) {
         { status: 402 }
       );
     }
-
-    const { topic, skills, complexity } = validationResult.data;
-
-    // Call the Python worker API with user credits
-    console.log("WORKER KEY", process.env.WORKER_API_KEY)
-    const pythonWorkerResponse = await fetch(`${process.env.PYTHON_WORKER_URL}/idea-generator`, {
+    
+    // Call the Python worker API
+    const workerResponse = await fetch(`${process.env.PYTHON_WORKER_URL}/competitive-analysis`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': process.env.WORKER_API_KEY!,
+        'X-API-Key': process.env.WORKER_API_KEY || '',
         'X-User-Credits': userCredits.toString()
       },
-      body: JSON.stringify({ topic, skills, complexity })
+      body: JSON.stringify({
+        project_description: projectDescription,
+        competitors: competitors || '',
+        target_audience: targetAudience || ''
+      }),
     });
-
-    if (!pythonWorkerResponse.ok) {
-      const errorData = await pythonWorkerResponse.json();
+    
+    if (!workerResponse.ok) {
+      const errorData = await workerResponse.json();
+      
+      // Handle insufficient credits from worker
       if (errorData.error === 'insufficient_credits') {
         return NextResponse.json(
           { error: 'insufficient_credits' },
           { status: 402 }
         );
       }
-      throw new Error('Python worker API request failed');
+      
+      throw new Error(`Worker API error: ${JSON.stringify(errorData)}`);
+    }
+    
+    const workerData = await workerResponse.json();
+    
+    if (!workerData.success) {
+      throw new Error('Worker API returned unsuccessful response');
     }
 
-    const result = await pythonWorkerResponse.json();
-    
     // Deduct used credits from user's account
-    const usedCredits = result.used_credits || 0;
+    const usedCredits = workerData.used_credits || 0;
     if (usedCredits > 0) {
       const { error: updateError } = await supabase
         .from('users')
@@ -107,13 +121,20 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    return NextResponse.json({ ideas: result.ideas });
-
+    const analysis: CompetitiveAnalysisResponse = {
+      uniqueValueProposition: workerData.uniqueValueProposition || [],
+      competitiveAdvantages: workerData.competitiveAdvantages || [],
+      targetAudienceAlignment: workerData.targetAudienceAlignment || '',
+      recommendedPositioning: workerData.recommendedPositioning || ''
+    };
+    
+    return NextResponse.json(analysis);
+    
   } catch (error) {
-    console.error('Error in idea generator API:', error);
+    console.error('Error in competitive analysis:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
     );
   }
-} 
+}

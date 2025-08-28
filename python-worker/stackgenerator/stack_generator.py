@@ -18,28 +18,32 @@ class StackGenerator:
         """Generate a comprehensive tech stack recommendation using OpenAI"""
         
         prompt = f"""
-        As an expert full-stack developer and modern stack architect, recommend a **practical and production-ready technology stack** for this project:
+            You are an expert developer and modern stack architect. Recommend a **practical and production-ready technology stack** for this project:
 
-        Project Type: {project_type}
-        Key Requirements: {requirements}
-        Preferences: {preferences}
+            Project Type: {project_type}
+            Key Requirements: {requirements}
+            Preferences: {preferences}
 
-        Guidelines:
-        - Focus only on modern, widely adopted tools that are actually used in production today (e.g., Next.js, Supabase, Auth.js).
-        - Do NOT suggest outdated or barebones stacks like plain Express, raw SQL, or vanilla Node unless absolutely required.
-        - Keep the output concise: one clear recommendation for frontend, backend, database, auth, and deployment — not multiple options.
-        - The goal is a stack that balances speed of development, scalability, and maintainability.
+            ### Rules
+            - Tailor the stack **directly to the project type**:
+            - If it's a **website or web app**, recommend modern web stacks (e.g. Next.js, Remix, Nuxt).
+            - If it's a **mobile application**, recommend **mobile-first stacks** (e.g. React Native, Expo, Flutter, Kotlin, Swift) and avoid suggesting web frameworks like Next.js/Nest.js unless the user explicitly wants a PWA.
+            - If it's a **small/local/IDE project**, suggest lightweight tools/frameworks suited to that environment.
+            - Only return **modern, production-ready technologies** actually used today.
+            - Do NOT list multiple options — provide one clear recommendation for each.
+            - Keep it realistic, balanced for speed of development, scalability, and maintainability.
 
-        Return the response as a valid JSON object with this structure:
-        {{
-        "frontend": "string",
-        "backend": "string",
-        "database": "string",
-        "authentication": "string",
-        "deployment": "string",
-        "reasoning": "string"
-        }}
-        """
+            ### Output Format
+            Return the response as a **valid JSON object** with this structure:
+            {{
+            "frontend": "string",
+            "backend": "string",
+            "database": "string",
+            "authentication": "string",
+            "deployment": "string",
+            "reasoning": "string"
+            }}
+            """
 
         
         try:
@@ -50,18 +54,18 @@ class StackGenerator:
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,
+                response_format={"type": "json_object"}
             )
             
-            # Extract and parse the JSON response
             content = response.choices[0].message.content
-            json_start = content.find('{')
-            json_end = content.rfind('}') + 1
-            json_str = content[json_start:json_end]
             
-            return json.loads(json_str)
+            # Return both the recommendation and token usage
+            return {
+                "recommendation": json.loads(content),
+                "used_tokens": response.usage.total_tokens if response.usage else 0
+            }
             
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"OpenAI API error: {str(e)}")
 
-# Create global instance
 stack_generator = StackGenerator()

@@ -22,22 +22,19 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    console.log("Validation passed!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
     const { shardId, description, features } = validation.data;
     const headersList = await headers();
     const sbAccessToken = headersList.get('sb-access-token');
-    const ghAccessToken = headersList.get('gh-access-token')
+    const ghAccessToken = headersList.get('gh-access-token');
     const userid = headersList.get('session-id');
     
-    if (!sbAccessToken) {
+    if (!sbAccessToken || !userid) {
       return NextResponse.json(
-        { error: 'Unauthorized - No access token provided' },
+        { error: 'Unauthorized - No access token or user ID provided' },
         { status: 401 }
       );
     }
-
-    console.log("Access Token exists!!!!!!!!!!!!!!!!!!!!!!!!!")
 
     // Initialize Supabase client with service role key
     const supabase = createClient(
@@ -48,11 +45,34 @@ export async function POST(request: Request) {
           headers: {
             Authorization: `Bearer ${sbAccessToken}`
           }
-        }
+        } 
       }
     );
 
-    console.log("Client Created!!!!!!!!!!!!!!!!!!")
+    // Get user's current credits
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('ai_credits')
+      .eq('id', userid)
+      .single();
+
+    if (userError || !user) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check if user has sufficient credits
+    if (user.ai_credits <= 0) {
+      return NextResponse.json(
+        { 
+          error: 'insufficient_credits',
+          message: 'Not enough AI credits to generate README'
+        },
+        { status: 402 }
+      );
+    }
 
     // Verify shard ownership
     const { data: shard, error: shardError } = await supabase
@@ -92,48 +112,74 @@ export async function POST(request: Request) {
       shard_id: shardId,
       metadata: {
         user_id: userid,
-        project_name: shard.title // Assuming title exists in shard
+        project_name: shard.title
       },
       github_token: ghAccessToken
     };
-    console.log("WORKER_API_KEY seen by Next.js:", process.env.WORKER_API_KEY);
+
     // Call Python worker
     const workerResponse = await fetch(`${process.env.PYTHON_WORKER_URL}/readme-builder`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': process.env.WORKER_API_KEY!
+        'X-API-Key': process.env.WORKER_API_KEY!,
+        'X-User-Credits': user.ai_credits.toString()
       },
       body: JSON.stringify(payload)
     });
 
+    // Handle worker response
     if (!workerResponse.ok) {
-      const error = await workerResponse.text();
-      console.error('Python worker error:', error);
+      let errorData: any;
+      
+      try {
+        errorData = await workerResponse.json();
+      } catch (jsonError) {
+        const errorText = await workerResponse.text();
+        try {
+          errorData = JSON.parse(errorText);
+        } catch (_) {
+          errorData = { message: errorText };
+        }
+      }
+
+      if (workerResponse.status === 402 && errorData) {
+        return NextResponse.json(
+          { 
+            error: 'insufficient_credits',
+            message: errorData.message || 'Not enough AI credits to complete generation'
+          },
+          { status: 402 }
+        );
+      }
+
+      console.error('Python worker error:', errorData);
       return NextResponse.json(
-        { error: 'README generation failed', details: error },
+        { error: 'README generation failed', details: errorData },
         { status: workerResponse.status }
       );
     }
 
+    // Parse successful response
     const workerData = await workerResponse.json();
 
-    // Debug log to see the actual structure
-    console.log("WorkerData FULL:::::::::::::", JSON.stringify(workerData, null, 2));
+    // Extract the readme content from the response structure
+    let content;
+    let usedCredits = 0;
 
-    // Check if readme_json exists
-    if (!workerData.readme_json) {
-      console.error('Invalid response structure from worker - missing readme_json:', workerData);
+    if (workerData.readme) {
+      // Handle direct readme structure
+      content = workerData.readme;
+      usedCredits = workerData.used_credits || 0;
+    } else {
+      console.error('Invalid response structure from worker:', workerData);
       return NextResponse.json(
-        { error: 'Invalid response from README generation service - missing readme_json' },
+        { error: 'Invalid response from README generation service' },
         { status: 500 }
       );
     }
 
-    // The readme_json IS the content, not a wrapper with content property
-    const content = workerData.readme_json;
-
-    // Additional validation to ensure it's proper TipTap JSON
+    // Validate TipTap JSON structure
     if (!content || typeof content !== 'object' || !content.type || content.type !== 'doc') {
       console.error('Invalid TipTap JSON structure:', content);
       return NextResponse.json(
@@ -142,10 +188,21 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log("Content extracted successfully");
-    console.log("Content type:", content.type);
-  
-    console.log("JSON::::::::::::::::::::::::::::::\n", JSON.stringify(content, null, 2))
+    // Update user credits if credits were used
+    console.log("USED CREDITS:::::::::::::::::::::::::::::", usedCredits)
+    if (usedCredits > 0) {
+      const { error: creditUpdateError } = await supabase
+        .from('users')
+        .update({ 
+          ai_credits: user.ai_credits - usedCredits,
+        })
+        .eq('id', userid);
+
+      if (creditUpdateError) {
+        console.error('Failed to update user credits:', creditUpdateError);
+        // Continue with README update even if credit update fails
+      }
+    }
 
     // Update shard with generated README
     const { error: updateError } = await supabase
@@ -161,7 +218,12 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { status: 'success', content },
+      { 
+        status: 'success', 
+        content,
+        used_credits: usedCredits,
+        remaining_credits: user.ai_credits - usedCredits
+      },
       { status: 200 }
     );
 

@@ -68,7 +68,7 @@ export default async function UserProfilePage({
   const activities = activityRes.ok ? await activityRes.json() : [];
 
   return (
-    <div className="flex max-h-screen min-w-screen max-w-screen-2xl mx-auto bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-zinc-100 relative ">
+    <div className="flex max-h-screen min-w-screen w-full mx-auto bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-zinc-100 relative overflow-x-hidden">
       {/* Glowing accent elements */}
       <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-lime-500/10 blur-3xl"></div>
       <div className="absolute -bottom-20 -right-20 w-64 h-64 rounded-full bg-lime-500/10 blur-3xl"></div>

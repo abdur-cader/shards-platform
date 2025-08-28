@@ -51,63 +51,56 @@ export default function ReadmeBuilderModal({ onClose }: { onClose: () => void })
     }
   });
 
-  const onSubmit = async (data: ReadmeFormValues) => {
-    if (!selectedShard) {
-      toast.error('Please select a shard');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await fetch('/api/ai-toolkit/readme-builder', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'sb-access-token': session?.supabaseAccessToken!,
-          'session-id': session?.user.id!,
-          'gh-access-token': session?.user.githubAccessToken!
-        },
-        body: JSON.stringify({
-          shardId: selectedShard.id,
-          description: data.description, // User-entered description (Optional)
-          features: data.features, // user entered key features (Optional)
-        }),
-      });
-
-      if (!response.ok) {
-  const errData = await response.json();
-  
-  let errMessage = "Failed to generate README";
-  
-  // Check if details is a string that contains JSON
-  if (errData.details && typeof errData.details === 'string') {
-    try {
-      // Try to parse the JSON string
-      const parsedDetails = JSON.parse(errData.details);
-      errMessage = parsedDetails.detail || errData.error || errMessage;
-    } catch {
-      // If parsing fails, use the string as is
-      errMessage = errData.details || errData.error || errMessage;
-    }
-  } else {
-    // If details is not a string, use it directly
-    errMessage = errData.details || errData.error || errMessage;
+const onSubmit = async (data: ReadmeFormValues) => {
+  if (!selectedShard) {
+    toast.error('Please select a shard');
+    return;
   }
-  
-  toast.error(errMessage, {duration: 6000});
-  throw new Error(errMessage);
-}
 
-      const result = await response.json();
-      onClose();
-      reset();
-      toast.success('README generated successfully!');
-    } catch (error) {
-      console.error('Error generating README:', error);
-    } finally {
-      setIsLoading(false);
+  setIsLoading(true);
+  try {
+    const response = await fetch('/api/ai-toolkit/readme-builder', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'sb-access-token': session?.supabaseAccessToken!,
+        'session-id': session?.user.id!,
+        'gh-access-token': session?.user.githubAccessToken!
+      },
+      body: JSON.stringify({
+        shardId: selectedShard.id,
+        description: data.description,
+        features: data.features,
+      }),
+    });
+
+    if (!response.ok) {
+      const errData = await response.json();
+      
+      let errMessage = "Failed to generate README";
+      
+      // Handle insufficient credits error specifically
+      if (errData.error === 'insufficient_credits') {
+        toast.error("You've run out of AI credits. Please upgrade your plan or wait until your credits refresh.", { 
+          duration: 10000,
+          description: errData.message 
+        });
+        return;
+      }
+      
+      // ... existing error handling ...
     }
-  };
+
+    const result = await response.json();
+    onClose();
+    reset();
+    toast.success('README generated successfully!');
+  } catch (error) {
+    console.error('Error generating README:', error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <Dialog open onOpenChange={(open) => {
@@ -189,11 +182,10 @@ export default function ReadmeBuilderModal({ onClose }: { onClose: () => void })
                   </div>
                 </div>
               </form>
-            </div>
+            </div> 
 
             <div className="flex justify-between items-center pt-6 border-t border-purple-500/20">
               <div className="text-sm text-gray-400 font-medium">
-                <span className="text-purple-400 font-semibold drop-shadow-[0_0_3px_rgba(192,132,252,0.4)]">1 credit</span> will be used
               </div>
               <div className="flex gap-3">
                 <Button
@@ -222,7 +214,6 @@ export default function ReadmeBuilderModal({ onClose }: { onClose: () => void })
                   ) : (
                     <>
                       Generate README
-                      <span className="ml-2 opacity-80 group-hover:opacity-100 transition-opacity">✨</span>
                     </>
                   )}
                 </Button>

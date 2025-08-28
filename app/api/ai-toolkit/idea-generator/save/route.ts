@@ -1,4 +1,3 @@
-import { HeadersAdapter } from "next/dist/server/web/spec-extension/adapters/headers";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 

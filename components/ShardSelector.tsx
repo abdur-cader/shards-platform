@@ -55,11 +55,14 @@ export default function ShardSelector({ userId, accessToken, onShardSelect }: Sh
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-64 justify-between">
+        <Button 
+          variant="outline" 
+          className="w-64 justify-between bg-[#0a0a1a] border-purple-700 text-purple-200 hover:bg-purple-900 hover:text-white hover:border-purple-500"
+        >
           {selectedShard ? selectedShard.slug : "Choose your Shard"}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64 bg-[#0a0a1a]">
+      <DropdownMenuContent className="w-64 bg-[#0a0a1a] border border-purple-800 shadow-lg shadow-purple-900/20">
         {shards.length > 0 ? (
           shards.map((shard) => (
             <DropdownMenuCheckboxItem
@@ -69,19 +72,22 @@ export default function ShardSelector({ userId, accessToken, onShardSelect }: Sh
                     setSelectedShard(shard);
                     onShardSelect?.(shard);
                 }}
-                className="flex justify-between items-center"
+                className={`flex justify-between items-center py-2 px-3 text-purple-200 hover:bg-purple-800 hover:text-white pl-8
+                  ${selectedShard?.id === shard.id ? 
+                    "bg-purple-900/30 text-white ring-1 ring-purple-500 shadow-md shadow-purple-500/30" : 
+                    ""}`}
             >
               <span className="truncate max-w-[120px]">{shard.title}</span>
               <div className="flex items-center gap-4 ml-4">
                 <div className="flex items-center gap-1 w-8 justify-end">
-                  <Heart className="h-3 w-3" />
-                  <span className="text-xs text-muted-foreground w-4 text-right">
+                  <Heart className="h-3 w-3 text-purple-400" />
+                  <span className="text-xs text-purple-300 w-4 text-right">
                     {shard.likes_count}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 w-8 justify-end">
-                  <Bookmark className="h-3 w-3" />
-                  <span className="text-xs text-muted-foreground w-4 text-right">
+                  <Bookmark className="h-3 w-3 text-purple-400" />
+                  <span className="text-xs text-purple-300 w-4 text-right">
                     {shard.saves_count}
                   </span>
                 </div>
@@ -89,7 +95,12 @@ export default function ShardSelector({ userId, accessToken, onShardSelect }: Sh
             </DropdownMenuCheckboxItem>
           ))
         ) : (
-          <DropdownMenuItem disabled>No shards found</DropdownMenuItem>
+          <DropdownMenuItem 
+            disabled 
+            className="text-purple-300 opacity-70 pl-8"
+          >
+            No shards found
+          </DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
