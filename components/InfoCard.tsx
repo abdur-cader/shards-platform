@@ -22,31 +22,31 @@ export const InfoCard: React.FC<InfoCardProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* actual card - now with metallic zinc styling */}
-      <div className="bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-lg p-6 max-w-xs text-center relative overflow-hidden border border-zinc-600/50 shadow-lg hover:-translate-y-4 transition-all duration-300 hover:duration-200 ease-[cubic-bezier(0.4,1.3,0.2,0.9)] hover:shadow-[0_10px_25px_-5px_rgba(82,82,91,0.4)] group">
+      {/* Redesigned card with purple gradient and metallic effects */}
+      <div className="bg-gradient-to-b from-[#0f0524] to-[#13082d] rounded-2xl p-6 max-w-xs text-center relative overflow-hidden border border-purple-800/40 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-purple-700/50 hover:-translate-y-1 group">
         {/* Metallic highlight effect */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-zinc-600/10 via-transparent to-transparent opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-600/10 via-transparent to-transparent opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-        {/* Icon container with metallic ring */}
-        <div className="w-12 h-12 bg-gradient-to-br from-zinc-700 to-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-zinc-500/30 shadow-inner relative z-10">
-          <div className="text-zinc-200 group-hover:text-white transition-colors">
+        {/* Icon container with purple metallic styling */}
+        <div className="w-12 h-12 bg-[#160a33] rounded-full flex items-center justify-center mx-auto mb-4 shadow-md shadow-purple-800/20 border border-purple-700/30 relative z-10">
+          <div className="text-purple-200 group-hover:text-purple-100 transition-colors">
             {svg}
           </div>
         </div>
 
-        <h3 className="text-zinc-100 font-semibold text-lg mb-2 group-hover:text-white transition-colors relative z-10">
+        <h3 className="text-purple-50 font-medium text-xl mb-3 group-hover:text-white transition-colors relative z-10">
           {title}
         </h3>
-        <p className="text-zinc-400 text-sm font-hind group-hover:text-zinc-300 transition-colors relative z-10">
+        <p className="text-purple-200 text-sm group-hover:text-purple-100 transition-colors relative z-10">
           {para}
         </p>
       </div>
 
-      {/* number shown under the card - now with zinc styling */}
+      {/* number shown under the card - now with purple styling */}
       <div
-        className={`mt-3 font-bold text-xl transition-all duration-300 text-white ${
+        className={`mt-3 font-bold text-xl transition-all duration-300 text-purple-300 ${
           isHovered
-            ? "opacity-100 translate-y-3 text-white"
+            ? "opacity-100 translate-y-2 text-purple-200"
             : "opacity-0 translate-y-0 pointer-events-none"
         }`}
       >

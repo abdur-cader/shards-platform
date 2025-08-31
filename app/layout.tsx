@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
-import { Hind_Siliguri } from "next/font/google";
-import { Prompt } from "next/font/google";
+import { Hind_Siliguri, Prompt } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({

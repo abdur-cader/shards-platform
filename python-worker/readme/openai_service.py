@@ -17,16 +17,16 @@ async def generate_readme_from_context(context: dict):
 You are an expert technical writer and TipTap (ProseMirror) content generator.
 
 Objective:
-Create a self-contained, polished README/tutorial **as TipTap JSON** for this single repository.
+Generate a complete, self-contained, polished README/tutorial **as a single valid TipTap JSON object** for this repository.
 
 Strict Output Contract:
-- Output **one** JSON object only with the exact structure:
-  {{
-    "type": "doc",
-    "content": [...]
-  }}
-- **Never** output a top-level array or nested structure
-- Use only standard TipTap nodes and marks as specified
+- Output **exactly one valid TipTap JSON object** with this exact structure:
+  {{"type": "doc", "content": [array_of_nodes]}}
+- **Never** output anything outside this JSON structure - no additional text, comments, or explanations.
+- Use **only these valid TipTap node types**: "paragraph", "heading", "bulletList", "listItem", "codeBlock", "text"
+- Use **only these valid mark types**: "bold", "italic", "code", "underline"
+- **Never** use snake_case variants like "bullet_list" or "list_item" - always use camelCase
+- Ensure every node has required attributes (e.g., heading must have "level" and "textAlign")
 
 Repository Context:
 - Repo Name: {context['repo_meta'].get('name', 'Unknown')}
@@ -36,16 +36,30 @@ Repository Context:
 - User Input: {context['user_input']}
 - Important Code Snippets: {context.get('code_snippets', 'No code snippets available')}
 
-Requirements:
-- Minimum 300 words, descriptive and casual tone
-- Include: Overview, Features, Installation, Usage, Code Explanation
-- Use multiple text formatting (bold, italics, code, codeblocks)
-- Include at least 2-3 actual code examples with explanations
-- Use emojis before section headers
-- First paragraph must contain "test successful" with highlight mark
+Content Requirements:
+- Minimum 300 words, descriptive yet casual tone
+- **Required sections**: Overview, Features, Installation, Usage, Code Explanation
+- Include **2-3 actual code examples** with proper language attributes in codeBlock nodes
+- Use **emojis** before section header text
+- First paragraph **must contain** "test successful" with bold/emphasis
+- All text nodes must be properly nested within paragraph or other container nodes
+- Every heading node must have: {{"attrs": {{"level": number, "textAlign": "left"}}}}
+- Every paragraph node must have: {{"attrs": {{"textAlign": "left"}}}}
+- Every codeBlock node must have: {{"attrs": {{"language": "language-name"}}}}
 
-Output ONLY the TipTap JSON object, no additional text or commentary.
+Validation Rules:
+1. JSON must be syntactically valid
+2. All node types must be valid TipTap types
+3. All marks must be valid TipTap marks  
+4. No empty content arrays
+5. No missing required attributes
+6. No text nodes outside of container nodes
+7. No markdown or HTML in text content
+
+Output:
+**ONLY** the complete TipTap JSON object that passes all validation rules. No other text.
 """
+
 
     try:
         response = client.chat.completions.create(
@@ -54,7 +68,6 @@ Output ONLY the TipTap JSON object, no additional text or commentary.
                 {"role": "system", "content": "You are a README generator that outputs only TipTap JSON. Output exactly one JSON object with type: 'doc' and content array."},
                 {"role": "user", "content": prompt},
             ],
-            temperature=0.7,
             response_format={"type": "json_object"}
         )
         print("OpenAI response received")

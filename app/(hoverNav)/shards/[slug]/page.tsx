@@ -104,25 +104,25 @@ export default async function ShardDetailPage({ params }: Props) {
 
   const iconBtnBase = `
     rounded-full
-    bg-gradient-to-r from-zinc-800 to-zinc-700
-    border border-gray-600
-    text-zinc-100
+    bg-gradient-to-r from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-700
+    border border-gray-300 dark:border-gray-600
+    text-zinc-800 dark:text-zinc-100
     shadow-md
     relative overflow-hidden
     transition-all duration-300 ease-in-out
     hover:scale-110
-    hover:from-lime-800 hover:to-lime-700
-    hover:border-lime-500
+    hover:from-lime-200 hover:to-lime-300 dark:hover:from-lime-800 dark:hover:to-lime-700
+    hover:border-lime-400 dark:hover:border-lime-500
     group
   `;
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br py-50 from-[#050505] via-[#0a0a0a] to-[#050505]">
+    <div className="min-h-screen w-full bg-gradient-to-br py-50 from-zinc-50 via-zinc-100 to-zinc-50 dark:from-[#050505] dark:via-[#0a0a0a] dark:to-[#050505]">
       {/* Decorative background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat [mask-image:linear-gradient(180deg,white,transparent_90%)] opacity-10" />
-        <div className="absolute -left-20 -top-20 w-64 h-64 bg-lime-500/10 rounded-full blur-3xl" />
-        <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-lime-500/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat [mask-image:linear-gradient(180deg,white,transparent_90%)] opacity-10 dark:opacity-10" />
+        <div className="absolute -left-20 -top-20 w-64 h-64 bg-lime-500/20 rounded-full blur-3xl dark:bg-lime-500/10" />
+        <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-lime-500/20 rounded-full blur-3xl dark:bg-lime-500/10" />
       </div>
 
       {/* Main container with adjusted spacing */}
@@ -132,22 +132,22 @@ export default async function ShardDetailPage({ params }: Props) {
           {/* Project Header */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-lime-200 to-lime-400">
+              <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-lime-600 to-lime-700 dark:from-lime-200 dark:to-lime-400">
                 {shard.title}
               </h1>
               {isOwner && (
                 <Badge
                   variant="outline"
-                  className="border-lime-500/30 text-lime-400 font-prompt bg-lime-800/30 font-[350]"
+                  className="border-lime-500/50 text-lime-600 font-prompt bg-lime-200/80 font-[350] dark:border-lime-500/30 dark:text-lime-400 dark:bg-lime-800/30"
                 >
                   Your Shard
                 </Badge>
               )}
             </div>
 
-            <p className="text-lg text-zinc-300 max-w-3xl">{shard.desc}</p>
+            <p className="text-lg text-zinc-700 dark:text-zinc-300 max-w-3xl">{shard.desc}</p>
 
-            <div className="flex items-center gap-4 text-sm text-zinc-400">
+            <div className="flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-400">
               <span className="flex items-center gap-1.5">
                 <Icons.calendar className="h-4 w-4" />
                 {formatDate(shard.created_at)}
@@ -163,7 +163,7 @@ export default async function ShardDetailPage({ params }: Props) {
 
           {/* Project Images */}
           {shard.image_url && shard.image_url.length > 0 && (
-            <div className="rounded-xl border border-zinc-800 overflow-hidden bg-gradient-to-br from-zinc-900/50 to-zinc-800/20 max-w-4xl shadow-lg shadow-black/50">
+            <div className="rounded-xl border border-zinc-300 dark:border-zinc-800 overflow-hidden bg-gradient-to-br from-zinc-100/50 to-zinc-200/30 dark:from-zinc-900/50 dark:to-zinc-800/20 max-w-4xl shadow-lg shadow-black/10 dark:shadow-black/50">
               <Carousel className="w-full">
                 <CarouselContent>
                   {shard.image_url.map((url: string, index: number) => (
@@ -177,15 +177,15 @@ export default async function ShardDetailPage({ params }: Props) {
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
                           priority={index === 0}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/60 via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-100/60 via-transparent to-transparent dark:from-zinc-900/60" />
                       </div>
                     </CarouselItem>
                   ))}
                 </CarouselContent>
                 {shard.image_url.length > 1 && (
                   <>
-                    <CarouselPrevious className="left-4 bg-zinc-900/80 hover:bg-zinc-800 border-zinc-700 text-zinc-100" />
-                    <CarouselNext className="right-4 bg-zinc-900/80 hover:bg-zinc-800 border-zinc-700 text-zinc-100" />
+                    <CarouselPrevious className="left-4 bg-zinc-100/80 hover:bg-zinc-200 border-zinc-300 text-zinc-800 dark:bg-zinc-900/80 dark:hover:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100" />
+                    <CarouselNext className="right-4 bg-zinc-100/80 hover:bg-zinc-200 border-zinc-300 text-zinc-800 dark:bg-zinc-900/80 dark:hover:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100" />
                   </>
                 )}
               </Carousel>
@@ -193,7 +193,7 @@ export default async function ShardDetailPage({ params }: Props) {
           )}
 
           {/* Content with animated border */}
-          <div className="relative rounded-lg border border-neutral-700 bg-zinc-800/50 p-6">
+          <div className="relative rounded-lg border border-neutral-300 dark:border-neutral-700 bg-zinc-100/50 dark:bg-zinc-800/50 p-6">
             <ShardContent
               initialMarkdown={shard.content || ""}
               slug={shard.slug}
@@ -205,25 +205,25 @@ export default async function ShardDetailPage({ params }: Props) {
         <aside className="lg:w-[22rem] xl:w-[24rem] lg:ml-12 sticky top-28 h-fit space-y-8">
           <div className="space-y-8">
             {/* Project Actions Card */}
-            <div className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/50 rounded-xl border border-zinc-800 p-6 space-y-6 shadow-lg shadow-black/30">
+            <div className="bg-gradient-to-br from-zinc-100/80 to-zinc-200/60 dark:from-zinc-900/80 dark:to-zinc-800/50 rounded-xl border border-zinc-300 dark:border-zinc-800 p-6 space-y-6 shadow-lg shadow-black/10 dark:shadow-black/30">
               <div className="space-y-3">
-                <h2 className="text-xl font-semibold text-white">
+                <h2 className="text-xl font-semibold text-zinc-800 dark:text-white">
                   {shard.title}
                 </h2>
-                <p className="text-sm text-zinc-300">{shard.desc}</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-300">{shard.desc}</p>
               </div>
 
               {shard.github_repo && (
                 <Button
                   asChild
                   className="w-full relative overflow-hidden rounded-lg 
-                    border border-gray-600
-                    bg-gradient-to-r from-zinc-800 to-zinc-700 
-                    text-zinc-100 shadow-md 
+                    border border-gray-300 dark:border-gray-600
+                    bg-gradient-to-r from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-700 
+                    text-zinc-800 dark:text-zinc-100 shadow-md 
                     transition-all duration-300 ease-in-out
                     hover:scale-105 
-                    hover:from-lime-800 hover:to-lime-700
-                    hover:border-lime-500
+                    hover:from-lime-200 hover:to-lime-300 dark:hover:from-lime-800 dark:hover:to-lime-700
+                    hover:border-lime-400 dark:hover:border-lime-500
                     group"
                 >
                   <a
@@ -237,7 +237,7 @@ export default async function ShardDetailPage({ params }: Props) {
                     <span
                       className="absolute inset-0 w-[200%]
                         bg-gradient-to-r from-transparent
-                        via-[rgba(190,242,100,0.2)] to-transparent
+                        via-[rgba(190,242,100,0.3)] to-transparent
                         -translate-x-full group-hover:translate-x-0
                         transition-transform duration-500 ease-in-out"
                     />
@@ -260,7 +260,7 @@ export default async function ShardDetailPage({ params }: Props) {
                   initialSaveCount={initialSaveCount}
                 />
 
-                <div className="h-8 w-px bg-gradient-to-b from-transparent via-zinc-500 to-transparent" />
+                <div className="h-8 w-px bg-gradient-to-b from-transparent via-zinc-400 dark:via-zinc-500 to-transparent" />
 
                 <Button
                   variant="ghost"
@@ -271,7 +271,7 @@ export default async function ShardDetailPage({ params }: Props) {
                   <span
                     className="absolute inset-0 w-[200%]
                       bg-gradient-to-r from-transparent
-                      via-[rgba(190,242,100,0.2)] to-transparent
+                      via-[rgba(190,242,100,0.3)] to-transparent
                       -translate-x-full group-hover:translate-x-0
                       transition-transform duration-500 ease-in-out"
                   />
@@ -280,25 +280,25 @@ export default async function ShardDetailPage({ params }: Props) {
             </div>
 
             {/* Author Card */}
-            <div className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/50 rounded-xl border border-zinc-800 p-6 space-y-4 shadow-lg shadow-black/30">
-              <h3 className="text-sm font-medium text-zinc-300 uppercase tracking-wider mb-2">
+            <div className="bg-gradient-to-br from-zinc-100/80 to-zinc-200/60 dark:from-zinc-900/80 dark:to-zinc-800/50 rounded-xl border border-zinc-300 dark:border-zinc-800 p-6 space-y-4 shadow-lg shadow-black/10 dark:shadow-black/30">
+              <h3 className="text-sm font-medium text-zinc-600 dark:text-zinc-300 uppercase tracking-wider mb-2">
                 Created by
               </h3>
               <HoverCard openDelay={200} closeDelay={100}>
                 <HoverCardTrigger asChild>
                   <Link href={`/user/${shard.users.username}`}>
                     <div className="flex items-center gap-3 group cursor-pointer">
-                      <Avatar className="h-12 w-12 border-2 border-zinc-600">
+                      <Avatar className="h-12 w-12 border-2 border-zinc-300 dark:border-zinc-600">
                         <AvatarImage src={shard.users.image || undefined} />
-                        <AvatarFallback className="bg-gradient-to-br from-zinc-500/20 to-zinc-600/20">
+                        <AvatarFallback className="bg-gradient-to-br from-zinc-300/50 to-zinc-400/40 dark:from-zinc-500/20 dark:to-zinc-600/20">
                           {shard.users.name?.charAt(0) || "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium group-hover:text-lime-300 transition-colors">
+                        <p className="font-medium text-zinc-800 group-hover:text-lime-600 dark:text-white dark:group-hover:text-lime-300 transition-colors">
                           {shard.users.name}
                         </p>
-                        <p className="text-sm text-zinc-400 hover:text-zinc-300">
+                        <p className="text-sm text-zinc-600 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300">
                           @{shard.users.username}
                         </p>
                       </div>
@@ -306,32 +306,32 @@ export default async function ShardDetailPage({ params }: Props) {
                   </Link>
                 </HoverCardTrigger>
                 <HoverCardContent
-                  className="w-full bg-gradient-to-br from-zinc-900 via-zinc-800/80 to-zinc-900 border border-zinc-700 shadow-xl rounded-xl backdrop-blur-sm"
+                  className="w-full bg-gradient-to-br from-zinc-100 via-zinc-200/80 to-zinc-100 dark:from-zinc-900 dark:via-zinc-800/80 dark:to-zinc-900 border border-zinc-300 dark:border-zinc-700 shadow-xl rounded-xl backdrop-blur-sm"
                   side="left"
                 >
                   <div className="flex items-start space-x-4">
-                    <Avatar className="h-14 w-14 border-2 border-zinc-600">
+                    <Avatar className="h-14 w-14 border-2 border-zinc-300 dark:border-zinc-600">
                       <AvatarImage src={shard.users.image || undefined} />
-                      <AvatarFallback className="bg-gradient-to-br from-zinc-500/20 to-zinc-600/20">
+                      <AvatarFallback className="bg-gradient-to-br from-zinc-300/50 to-zinc-400/40 dark:from-zinc-500/20 dark:to-zinc-600/20">
                         {shard.users.name?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="space-y-1.5">
-                      <h4 className="text-sm font-semibold text-white">
+                      <h4 className="text-sm font-semibold text-zinc-800 dark:text-white">
                         {shard.users.name}
                       </h4>
-                      <p className="text-sm text-zinc-400">
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
                         @{shard.users.username}
                       </p>
                       {shard.users.bio && (
-                        <p className="text-sm text-zinc-300 pt-2">
+                        <p className="text-sm text-zinc-700 dark:text-zinc-300 pt-2">
                           {shard.users.bio}
                         </p>
                       )}
                       <Button
                         variant="outline"
                         size="sm"
-                        className="mt-3 bg-zinc-800/50 border-zinc-700 hover:bg-zinc-700/50 text-zinc-200"
+                        className="mt-3 bg-zinc-200/50 border-zinc-300 hover:bg-zinc-300/50 text-zinc-700 dark:bg-zinc-800/50 dark:border-zinc-700 dark:hover:bg-zinc-700/50 dark:text-zinc-200"
                         asChild
                       >
                         <Link href={`/user/${shard.users.username}`}>

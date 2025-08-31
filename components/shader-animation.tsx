@@ -148,7 +148,7 @@ export function ShaderAnimation() {
       ref={containerRef}
       className="w-full h-screen"
       style={{
-        background: "#0f0524",
+        background: "transparent",
         overflow: "hidden",
       }}
     />

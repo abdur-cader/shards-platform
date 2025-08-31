@@ -26,7 +26,7 @@ const Navbar = ({ className }: { className?: string }) => {
       )}
     >
       <Menu setActive={setActive}>
-        <Link href="/pricing">Pricing</Link>
+        <Link href="/pricing" className="text-white">Pricing</Link>
         <MenuItem setActive={setActive} active={active} item="Shards">
           <div className="flex flex-col space-y-4 text-sm">
             <HoveredLink href="/shards/explore">Explore Shards</HoveredLink>
@@ -65,7 +65,7 @@ const Navbar = ({ className }: { className?: string }) => {
           <MenuItem
             setActive={setActive}
             active={active}
-            item={session?.user?.githubAccessToken ?? "User"}
+            item={session.user?.name ? session.user.name.charAt(0).toLocaleUpperCase() + session.user.name.slice(1) : "User"}
           >
             <div className="flex flex-col space-y-4 text-sm">
               <HoveredLink href={`/user/${session?.user?.github_login}`}>

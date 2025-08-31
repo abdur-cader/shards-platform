@@ -60,6 +60,10 @@
   /* Chrome, Safari, Opera */
 }
 
+.font-rsalt {
+  font-family: var(--font-rsalt), cursive;
+}
+
 @theme inline {
   --animate-aurora: aurora 60s linear infinite;
   @keyframes aurora {
@@ -558,4 +562,65 @@
   background-repeat: no-repeat;
   background-size: cover;
   animation: glowBeams 20s ease-in-out infinite alternate;
+}
+
+
+/* diagonal background animation */
+
+.diagonal-bg {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--light-bg,#f1f1f1), /* black background */
+    var(--light-bg,#f1f1f1) 39px,
+    var(--light-line, #b5ee6b) 20px, /* dark lime line */
+    var(--light-accent, #729e3c) 41px
+  );
+  background-size: 200% 200%;
+  animation: move-diagonal 30s linear infinite;
+}
+
+@keyframes move-diagonal {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+
+:is(.dark .diagonal-bg) {
+  --light-bg: #000000;
+  --light-line: #4d7c0f;
+  --light-accent: #1f3306;
+}
+
+
+
+.diagonal-purple-bg {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--light-bg, #f1f1f1),
+    var(--light-bg, #f1f1f1) 19px,
+    var(--light-line, #8051c7) 10px,
+    var(--light-accent, #6158dd) 21px
+  );
+  background-size: 200% 200%;
+  animation: move-diagonal-purple 30s linear infinite;
+}
+
+@keyframes move-diagonal-purple {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+/* Dark mode styles using Tailwind's dark: selector */
+:is(.dark .diagonal-purple-bg) {
+  --light-bg: #000000;
+  --light-line: #3b1f66;
+  --light-accent: #1f3306;
 }
