@@ -2,8 +2,24 @@ import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Pencil, PencilIcon } from "lucide-react";
 
-export default async function EditShardPage({ params }: { params: { slug: string } }) {
+export default async function EditShardPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
   const { slug } = params;
 
   const { data: shard, error } = await supabase
@@ -40,31 +56,48 @@ export default async function EditShardPage({ params }: { params: { slug: string
   }
 
   return (
-    <main className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Edit Shard</h1>
-      <form action={updateShard} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Title</label>
-          <input
-            type="text"
-            name="title"
-            defaultValue={shard.title}
-            className="w-full border p-2 rounded"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Description</label>
-          <textarea
-            name="desc"
-            defaultValue={shard.desc}
-            className="w-full border p-2 rounded"
-            rows={5}
-          />
-        </div>
-        <button type="submit" className="bg-black text-white px-4 py-2 rounded">
-          Save Changes
-        </button>
-      </form>
-    </main>
+    // slight super dark lime gradient to super dark almost black lime
+    <div className="min-h-screen flex items-center bg-gradient-to-br from-[#e6f4e6] to-[#d4e9d4] dark:bg-gradient-to-br dark:from-[#071407] dark:to-[#010301] justify-center p-4">
+      <Card className="w-full max-w-2xl">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-[400] flex items-center font-prompt">
+            <PencilIcon className="ml-1 mr-2" />
+            Edit
+          </CardTitle>
+          <CardDescription>
+            Update the title and description of your shard.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form action={updateShard} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                name="title"
+                type="text"
+                defaultValue={shard.title}
+                placeholder="Enter a title for your shard"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="desc">Description</Label>
+              <Textarea
+                id="desc"
+                name="desc"
+                defaultValue={shard.desc}
+                placeholder="Describe your shard"
+                rows={5}
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full">
+              Save Changes
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

@@ -19,15 +19,21 @@ export default function ShardsClient({ shards }: Props) {
       {/* Hero Section - Compact version */}
       <div className="mt-[20vh] h-[20vh] flex flex-col items-center justify-center px-4 text-center">
         <div className="max-w-2xl mx-auto space-y-4">
-          <h1 className="text-4xl md:text-5xl font-prompt font-[500] text-lime-900 dark:text-lime-200">
-            Explore Shards
+          <h1 className="relative text-4xl md:text-5xl font-prompt font-[500] text-lime-900 dark:text-lime-200">
+            {/* angled background word */}
+            <span className="absolute top-[-10] left-10 -rotate-12 text-red-900/80 dark:text-lime-200/20 z-0 pointer-events-none select-none font-rsalt text-6xl md:text-7xl">
+              Shards
+            </span>
+
+            {/* main word on top */}
+            <span className="relative z-10">Explore</span>
           </h1>
-          <p className="text-md md:text-lg text-gray-600 dark:text-gray-300 max-w-md mx-auto">
-            Discover fragments of knowledge, inspiration, and creativity from our community
+          <p className="text-md md:text-lg text-gray-600 mt-10 dark:text-gray-300 max-w-md mx-auto">
+            Discover what our community is building and sharing.
           </p>
         </div>
       </div>
-      
+
       <div className="flex-1 pb-10">
         <div className="flex justify-end">
           <div className="px-2 py-1 bg-gray-900 rounded-full bg-neutral-700 mr-6">
@@ -50,12 +56,14 @@ export default function ShardsClient({ shards }: Props) {
               <Switch
                 id="layout-switch"
                 checked={layout === "grid"}
-                onCheckedChange={(checked) => setLayout(checked ? "grid" : "masonry")}
+                onCheckedChange={(checked) =>
+                  setLayout(checked ? "grid" : "masonry")
+                }
               />
             </div>
           </div>
         </div>
-        
+
         <section
           className={`${
             layout === "masonry" ? "max-w-7xl" : "max-w-6xl"
@@ -71,7 +79,9 @@ export default function ShardsClient({ shards }: Props) {
             {shards.map((shard) => (
               <FadeInOnScroll
                 key={shard.id}
-                className={layout === "masonry" ? "break-inside-avoid mb-6" : ""}
+                className={
+                  layout === "masonry" ? "break-inside-avoid mb-6" : ""
+                }
               >
                 <ShardComponent
                   slug={shard.slug}

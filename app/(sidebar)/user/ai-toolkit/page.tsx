@@ -4,11 +4,41 @@ import { useState, useEffect, useRef } from "react";
 import ToolGrid from "@/app/(sidebar)/user/ai-toolkit/ToolGrid";
 import Header from "@/app/(sidebar)/user/ai-toolkit/Header";
 import { useSession } from "next-auth/react";
-import { useRouter  } from "next/navigation";
+import { useRouter } from "next/navigation";
 import * as THREE from "three";
+import IdeasDrawer from "@/components/IdeasDrawer";
+import StacksDrawer from "@/components/StacksDrawer";
+
+interface SavedIdea {
+  id: string;
+  created_at: string;
+  object: {
+    title: string;
+    description: string;
+    estimatedTime: string;
+  };
+}
+
+interface SavedStack {
+  id: string;
+  created_at: string;
+  object: {
+    backend: string;
+    database: string;
+    frontend: string;
+    reasoning: string;
+    deployment: string;
+    authentication: string;
+  };
+}
 
 export default function AIToolkitPage() {
   const [gradientPos, setGradientPos] = useState({ x: 50, y: 50 });
+  const [savedIdeas, setSavedIdeas] = useState<SavedIdea[]>([]);
+  const [savedStacks, setSavedStacks] = useState<SavedStack[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showIdeasDrawer, setShowIdeasDrawer] = useState(false);
+  const [showStacksDrawer, setShowStacksDrawer] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -18,9 +48,58 @@ export default function AIToolkitPage() {
     if (status === "loading") return;
     if (!session) {
       console.log("NO SESSION DETECTED");
-      router.push("/"); // now it works
+      router.push("/");
     }
   }, [session, router]);
+
+  useEffect(() => {
+    const fetchSavedData = async () => {
+      console.log("SESSION::::::", session?.user?.id);
+      console.log("SBATOKEN::::::", session?.supabaseAccessToken);
+      if (!session) return;
+
+      try {
+        setLoading(true);
+        const ideasResponse = await fetch("/api/ai-toolkit/saves/ideas", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "sb-access-token": session.supabaseAccessToken!,
+            "user-id": session.user.id!,
+          },
+        });
+
+        const stacksResponse = await fetch("/api/ai-toolkit/saves/stack", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "user-id": session.user.id!,
+            "sb-access-token": session.supabaseAccessToken!,
+          },
+        });
+
+        console.log("stacksResponse!!!!!!!!:", stacksResponse);
+
+        if (ideasResponse.ok) {
+          const ideasData = await ideasResponse.json();
+          setSavedIdeas(ideasData);
+        }
+
+        if (stacksResponse.ok) {
+          const stacksData = await stacksResponse.json();
+          setSavedStacks(stacksData);
+        }
+      } catch (error) {
+        console.error("Error fetching saved data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (session) {
+      fetchSavedData();
+    }
+  }, [session]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -29,8 +108,8 @@ export default function AIToolkitPage() {
       setGradientPos({ x, y });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   useEffect(() => {
@@ -100,9 +179,9 @@ export default function AIToolkitPage() {
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
 
-    const renderer = new THREE.WebGLRenderer({ 
+    const renderer = new THREE.WebGLRenderer({
       antialias: true,
-      alpha: true // Enable transparency
+      alpha: true, // Enable transparency
     });
     renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -168,24 +247,22 @@ export default function AIToolkitPage() {
   if (!session && status !== "loading") {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 w-screen text-white">
-        <p className="text-lg">
-          Log In or Sign Up to view this page.
-        </p>
+        <p className="text-lg">Log In or Sign Up to view this page.</p>
         <p className="text-sm text-gray-400">Redirecting...</p>
       </div>
     );
   }
 
-  return ( 
-    <div className="min-h-screen min-w-screen text-gray-100 relative overflow-hidden">
+  const recentIdeas = savedIdeas.slice(0, 3);
+  const recentStacks = savedStacks.slice(0, 3);
+
+  return (
+    <div className="min-h-screen min-w-screen text-gray-100 relative overflow-x-hidden overflow-y-auto">
       {/* Shader Animation Background */}
-      <div 
-        ref={containerRef}
-        className="absolute inset-0 w-full h-full z-0"
-      />
-      
+      <div ref={containerRef} className="fixed inset-0 w-full h-full z-0" />
+
       {/* Content Overlay */}
-      <div 
+      <div
         className="absolute inset-0 z-10"
         style={{
           background: `
@@ -201,26 +278,208 @@ export default function AIToolkitPage() {
               rgba(30, 27, 75, 0.7) 50%,
               rgba(15, 23, 42, 0.9) 100%
             )
-          `
+          `,
         }}
       >
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] pointer-events-none"></div>
-        
+
         <div className="container mx-auto px-4 py-8 max-w-7xl relative z-20">
           <Header />
-          
-          <main className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <section className="lg:col-span-3">
+
+          <main className="space-y-12">
+            {/* ToolGrid Section */}
+            <section>
               <ToolGrid />
+            </section>
+
+            {/* Saved Ideas Section - Full Width */}
+            <section className="w-full bg-gradient-to-r from-purple-900/20 via-gray-900 to-indigo-900/20 py-12 px-4 rounded-xl border border-purple-500/20">
+              <div className="max-w-7xl mx-auto">
+                <div className="flex justify-between items-center mb-8">
+                  <h2 className="text-2xl font-bold text-purple-300">
+                    Your Saved Ideas
+                  </h2>
+                  {savedIdeas.length > 3 && (
+                    <button
+                      onClick={() => setShowIdeasDrawer(true)}
+                      className="text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1"
+                    >
+                      View All <span className="text-lg">→</span>
+                    </button>
+                  )}
+                </div>
+                {savedIdeas.length === 0 ? (
+                  <div className="text-center py-8 bg-gray-800/30 rounded-lg border border-gray-700/50">
+                    <p className="text-gray-400 text-lg">No saved ideas yet.</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Start using the AI tools above to generate and save ideas!
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {recentIdeas.map((idea) => (
+                      <div
+                        key={idea.id}
+                        className="bg-gradient-to-br from-[#0f0524] via-[#0f0d29] to-[#13082d] p-6 rounded-lg border border-purple-500/20 shadow-lg hover:border-purple-500/50 transition-colors"
+                      >
+                        <div className="flex justify-between items-start mb-4">
+                          <h3 className="font-bold text-purple-200 text-lg">
+                            {idea.object.title}
+                          </h3>
+                          <span className="text-xs text-gray-400 bg-gray-900 px-2 py-1 rounded">
+                            {new Date(idea.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="text-sm space-y-3">
+                          <div>
+                            <p className="text-gray-400 mt-1">
+                              {idea.object.description}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-purple-400 font-medium">
+                              ETC:
+                            </span>
+                            <p className="text-white mt-1">
+                              {idea.object.estimatedTime}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* Saved Stacks Section - Full Width */}
+            <section className="w-full bg-gradient-to-r from-indigo-900/20 via-gray-900 to-purple-900/20 py-12 px-4 rounded-xl border border-indigo-500/20">
+              <div className="max-w-7xl mx-auto">
+                <div className="flex justify-between items-center mb-8">
+                  <h2 className="text-2xl font-bold text-indigo-300">
+                    Your Saved Tech Stacks
+                  </h2>
+                  {savedStacks.length > 3 && (
+                    <button
+                      onClick={() => setShowStacksDrawer(true)}
+                      className="text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
+                    >
+                      View All <span className="text-lg">→</span>
+                    </button>
+                  )}
+                </div>
+                {savedStacks.length === 0 ? (
+                  <div className="text-center py-8 bg-gray-800/30 rounded-lg border border-gray-700/50">
+                    <p className="text-gray-400 text-lg">
+                      No saved stacks yet.
+                    </p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Use the Stack Generator tool to create and save tech
+                      stacks!
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {recentStacks.map((stack) => (
+                      <div
+                        key={stack.id}
+                        className="bg-gradient-to-br from-[#0f0524] via-[#0f0d29] to-[#13082d] p-6 rounded-lg border border-purple-500/20 shadow-lg hover:border-purple-500/50 transition-colors"
+                      >
+                        <div className="flex justify-between items-start mb-4">
+                          <h3 className="font-bold text-purple-200 text-lg">
+                            Tech Stack
+                          </h3>
+                          <span className="text-xs text-gray-400 bg-gray-900 px-2 py-1 rounded">
+                            {new Date(stack.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="text-sm space-y-3">
+                          <div>
+                            <span className="text-purple-400 font-medium">
+                              Frontend:
+                            </span>
+                            <p className="text-gray-400 mt-1">
+                              {stack.object.frontend}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-purple-400 font-medium">
+                              Backend:
+                            </span>
+                            <p className="text-gray-400 mt-1">
+                              {stack.object.backend}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-purple-400 font-medium">
+                              Database:
+                            </span>
+                            <p className="text-gray-400 mt-1">
+                              {stack.object.database}
+                            </p>
+                          </div>
+                          {stack.object.authentication && (
+                            <div>
+                              <span className="text-purple-400 font-medium">
+                                Authentication:
+                              </span>
+                              <p className="text-gray-400 mt-1">
+                                {stack.object.authentication}
+                              </p>
+                            </div>
+                          )}
+                          {stack.object.deployment && (
+                            <div>
+                              <span className="text-purple-400 font-medium">
+                                Deployment:
+                              </span>
+                              <p className="text-gray-400 mt-1">
+                                {stack.object.deployment}
+                              </p>
+                            </div>
+                          )}
+                          {stack.object.reasoning && (
+                            <div>
+                              <span className="text-purple-400 font-medium">
+                                Reasoning:
+                              </span>
+                              <p className="text-gray-400 mt-1">
+                                {stack.object.reasoning}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </section>
           </main>
         </div>
       </div>
 
+      {/* Drawers */}
+      <IdeasDrawer
+        open={showIdeasDrawer}
+        onOpenChange={setShowIdeasDrawer}
+        ideas={savedIdeas}
+      />
+
+      <StacksDrawer
+        open={showStacksDrawer}
+        onOpenChange={setShowStacksDrawer}
+        stacks={savedStacks}
+      />
+
       <style jsx global>{`
         @keyframes shine {
-          0% { transform: translateX(-100%) skewX(-15deg); }
-          100% { transform: translateX(100%) skewX(-15deg); }
+          0% {
+            transform: translateX(-100%) skewX(-15deg);
+          }
+          100% {
+            transform: translateX(100%) skewX(-15deg);
+          }
         }
       `}</style>
     </div>

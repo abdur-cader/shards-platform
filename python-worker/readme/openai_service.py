@@ -41,7 +41,7 @@ Content Requirements:
 - **Required sections**: Overview, Features, Installation, Usage, Code Explanation
 - Include **2-3 actual code examples** with proper language attributes in codeBlock nodes
 - Use **emojis** before section header text
-- First paragraph **must contain** "test successful" with bold/emphasis
+- Text should **always** start with a heading
 - All text nodes must be properly nested within paragraph or other container nodes
 - Every heading node must have: {{"attrs": {{"level": number, "textAlign": "left"}}}}
 - Every paragraph node must have: {{"attrs": {{"textAlign": "left"}}}}

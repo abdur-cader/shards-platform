@@ -16,7 +16,11 @@ const HindFont = Hind_Siliguri({
   variable: "--font-hind",
 });
 
-export default async function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await auth(); // fetch session server-side
 
   return (

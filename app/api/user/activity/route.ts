@@ -42,13 +42,6 @@ export async function GET(req: Request) {
       .eq('id', userId)
       .single();
 
-    const joinedActivity = new Date(userData?.created_at) >= thirtyDaysAgo
-      ? [{
-          id: `joined-${userId}`,
-          type: 'joined',
-          created_at: userData?.created_at
-        }]
-      : [];
 
     // 2. Get created shards
     const { data: createdShards } = await supabase
@@ -112,7 +105,6 @@ export async function GET(req: Request) {
         })) || [];
 
     const allActivities = [
-      ...joinedActivity,
       ...createdActivities,
       ...updatedActivities,
       ...likedActivities,

@@ -13,7 +13,7 @@ const RockSaltFont = Rock_Salt({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-rsalt",
-})
+});
 
 const HindFont = Hind_Siliguri({
   subsets: ["latin"],
@@ -23,7 +23,9 @@ const HindFont = Hind_Siliguri({
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <main className={` ${RockSaltFont.variable} ${PromptFont.variable} ${HindFont.variable} font-hind`}>
+    <main
+      className={` ${RockSaltFont.variable} ${PromptFont.variable} ${HindFont.variable} font-hind`}
+    >
       <Navbar />
       {/* padding 18 */}
       {children}

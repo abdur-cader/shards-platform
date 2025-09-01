@@ -113,18 +113,49 @@ interface ChartData {
   saves: number;
 }
 
+async function fetchUserActivities(
+  userId: string,
+  supabaseAccessToken: string
+): Promise<ActivityData[]> {
+  const response = await fetch(
+    `${process.env.NEXTAUTH_URL}/api/user/activity?user_id=${userId}`,
+    {
+      headers: {
+        "session-id": userId,
+        "sb-access-token": supabaseAccessToken,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to fetch user activities");
+  }
+
+  return response.json();
+}
+
+interface ActivityData {
+  id: string;
+  type: "created" | "liked" | "saved" | "updated" | "joined";
+  created_at: string;
+  shard_title?: string;
+}
+
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user) {
     redirect("/");
   }
 
-  const [userData, userStats, userShards, chartData] = await Promise.all([
-    fetchUserData(session.user.id, session.supabaseAccessToken || ""),
-    fetchUserStats(session.user.id, session.supabaseAccessToken || ""),
-    fetchUserShards(session.user.id, session.supabaseAccessToken || ""),
-    fetchChartData(session.user.id, session.supabaseAccessToken || ""),
-  ]);
+  const [userData, userStats, userShards, chartData, activities] =
+    await Promise.all([
+      fetchUserData(session.user.id, session.supabaseAccessToken || ""),
+      fetchUserStats(session.user.id, session.supabaseAccessToken || ""),
+      fetchUserShards(session.user.id, session.supabaseAccessToken || ""),
+      fetchChartData(session.user.id, session.supabaseAccessToken || ""),
+      fetchUserActivities(session.user.id, session.supabaseAccessToken || ""),
+    ]);
 
   return (
     <DashboardClient
@@ -132,6 +163,7 @@ export default async function DashboardPage() {
       userStats={userStats}
       userShards={userShards}
       chartData={chartData}
+      activities={activities}
     />
   );
 }

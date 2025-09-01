@@ -131,7 +131,7 @@ export default function ShardForm({ repos }: ShardFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-5 max-w-xl mx-auto mt-6"
+        className="space-y-5 max-w-2xl mx-auto mt-6"
       >
         <FormField
           control={form.control}
