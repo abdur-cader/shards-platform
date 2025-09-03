@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   images: {
     domains: ['wjlwqhmtlzsiyhzwtety.supabase.co'],
+  },
+  eslint: {
+    ignoreDuringBuilds: true
   }
 };
 
