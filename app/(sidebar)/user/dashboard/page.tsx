@@ -6,14 +6,17 @@ async function fetchUserData(
   userId: string,
   supabaseAccessToken: string
 ): Promise<UserData> {
-  const response = await fetch(`${process.env.NEXTAUTH_URL}/api/user`, {
-    headers: {
-      "session-id": userId,
-      "sb-access-token": supabaseAccessToken,
-      purpose: "edit",
-      single: "true",
-    },
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/user`,
+    {
+      headers: {
+        "session-id": userId,
+        "sb-access-token": supabaseAccessToken,
+        purpose: "edit",
+        single: "true",
+      },
+    }
+  );
   if (!response.ok) throw new Error("Failed to fetch user data");
   return response.json();
 }
@@ -23,7 +26,7 @@ async function fetchUserStats(
   supabaseAccessToken: string
 ): Promise<StatsData> {
   const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/user/stats?userId=${userId}`,
+    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/user/stats?userId=${userId}`,
     {
       headers: {
         Authorization: `Bearer ${supabaseAccessToken}`,
@@ -39,7 +42,7 @@ async function fetchUserShards(
   supabaseAccessToken: string
 ): Promise<ShardData[]> {
   const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/user/shards?user_id=${userId}`,
+    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/user/shards?user_id=${userId}`,
     {
       headers: {
         "session-id": userId,
@@ -62,7 +65,7 @@ async function fetchChartData(
   supabaseAccessToken: string
 ): Promise<ChartData[]> {
   const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/user/analytics?userId=${userId}`,
+    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/user/analytics?userId=${userId}`,
     {
       headers: {
         Authorization: `Bearer ${supabaseAccessToken}`,
@@ -118,7 +121,7 @@ async function fetchUserActivities(
   supabaseAccessToken: string
 ): Promise<ActivityData[]> {
   const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/user/activity?user_id=${userId}`,
+    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/user/activity?user_id=${userId}`,
     {
       headers: {
         "session-id": userId,

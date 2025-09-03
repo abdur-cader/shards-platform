@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   slug: string;
-  onDeleteSuccess?: () => void; 
+  onDeleteSuccess?: () => void;
 }
 
 const DockDropdown = ({ slug, onDeleteSuccess }: Props) => {
@@ -62,7 +62,9 @@ const DockDropdown = ({ slug, onDeleteSuccess }: Props) => {
       toast.error("Failed to update visibility");
       console.error("Failed to toggle visibility:", error);
     } else {
-      toast.success(`Shard successfully made ${!isVisible ? "public" : "private"}`);
+      toast.success(
+        `Shard successfully made ${!isVisible ? "public" : "private"}`
+      );
       setIsVisible(!isVisible);
     }
     setLoading(false);
@@ -70,26 +72,23 @@ const DockDropdown = ({ slug, onDeleteSuccess }: Props) => {
   const router = useRouter();
   const handleDelete = async () => {
     const deletePromise = new Promise<void>(async (resolve, reject) => {
-      const { error } = await supabase
-        .from("shards")
-        .delete()
-        .eq("slug", slug);
+      const { error } = await supabase.from("shards").delete().eq("slug", slug);
 
       if (error) return reject(error);
       resolve();
     });
 
     toast.promise(deletePromise, {
-      loading: 'Deleting shard...',
+      loading: "Deleting shard...",
       success: () => {
         onDeleteSuccess?.();
-        router.back()
+        router.back();
         setTimeout(() => {
           window.location.reload();
         }, 50);
-        return 'Shard deleted successfully';
+        return "Shard deleted successfully";
       },
-      error: 'Failed to delete shard'
+      error: "Failed to delete shard",
     });
   };
 
@@ -97,8 +96,11 @@ const DockDropdown = ({ slug, onDeleteSuccess }: Props) => {
     <div>
       <DropdownMenuItem
         onClick={() => {
-          navigator.clipboard.writeText(`http://localhost:3000/shards/${slug}`);
-          toast.success('Link copied to clipboard');
+          navigator.clipboard
+            .writeText(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/shards/${slug}`)
+            .then(() => console.log("Copied!"))
+            .catch((err) => console.error("Failed to copy:", err));
+          toast.success("Link copied to clipboard");
         }}
       >
         <Link2 className="mr-2 h-4 w-4" />
@@ -124,21 +126,32 @@ const DockDropdown = ({ slug, onDeleteSuccess }: Props) => {
 
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-500 focus:text-red-600 cursor-pointer">
+          <DropdownMenuItem
+            onSelect={(e) => e.preventDefault()}
+            className="text-red-500 focus:text-red-600 cursor-pointer"
+          >
             <Trash className="mr-2 h-4 w-4" />
             Delete Shard
           </DropdownMenuItem>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-center">Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle className="text-center">
+              Are you sure?
+            </AlertDialogTitle>
             <AlertDialogDescription className="text-center">
-              This shard will be <b>permanently</b> deleted. This cannot be undone.
+              This shard will be <b>permanently</b> deleted. This cannot be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-900 text-red-100 hover:bg-red-700 cursor-pointer">
+            <AlertDialogCancel className="cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-900 text-red-100 hover:bg-red-700 cursor-pointer"
+            >
               Delete Shard
             </AlertDialogAction>
           </AlertDialogFooter>

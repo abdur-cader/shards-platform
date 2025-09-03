@@ -1,6 +1,6 @@
 // app/(sidebar)/user/ai-toolkit/ToolGrid.tsx
 "use client";
-import { tools, type Tool } from "./constants";
+import { tools } from "./constants";
 import AiToolkitCard from "@/components/AiToolkitCard";
 import { useState } from "react";
 import IdeaGeneratorModal from "./services/IdeaGeneratorModal";
@@ -19,7 +19,7 @@ export default function ToolGrid() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
       {/* Subtle purple glow behind the grid */}
       <div className="absolute inset-0 bg-purple-900/10 blur-xl rounded-full transform scale-125 -z-10"></div>
-      
+
       {tools.map((tool) => (
         <AiToolkitCard
           key={tool.slug}

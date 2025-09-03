@@ -42,10 +42,13 @@ export default async function ShardDetailPage({ params }: Props) {
     headers["sb-access-token"] = session?.supabaseAccessToken;
   }
 
-  const res = await fetch(`${process.env.NEXTAUTH_URL}/api/shards/${slug}`, {
-    method: "GET",
-    headers,
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/shards/${slug}`,
+    {
+      method: "GET",
+      headers,
+    }
+  );
   const json = await res.json();
 
   if (!res.ok || !json.shard) {
@@ -145,7 +148,9 @@ export default async function ShardDetailPage({ params }: Props) {
               )}
             </div>
 
-            <p className="text-lg text-zinc-700 dark:text-zinc-300 max-w-3xl">{shard.desc}</p>
+            <p className="text-lg text-zinc-700 dark:text-zinc-300 max-w-3xl">
+              {shard.desc}
+            </p>
 
             <div className="flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-400">
               <span className="flex items-center gap-1.5">
@@ -210,7 +215,9 @@ export default async function ShardDetailPage({ params }: Props) {
                 <h2 className="text-xl font-semibold text-zinc-800 dark:text-white">
                   {shard.title}
                 </h2>
-                <p className="text-sm text-zinc-600 dark:text-zinc-300">{shard.desc}</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                  {shard.desc}
+                </p>
               </div>
 
               {shard.github_repo && (

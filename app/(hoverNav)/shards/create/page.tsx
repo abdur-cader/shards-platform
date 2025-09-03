@@ -1,10 +1,15 @@
 import React from "react";
-import Herotemp from "@/components/Herotemp";
 import { auth, signIn } from "@/auth";
 
 import ShardForm from "@/components/ShardForm";
 
-async function fetchUserRepos(githubUsername: string) {
+type GithubRepo = {
+  name: string;
+  full_name: string;
+  html_url: string;
+};
+
+async function fetchUserRepos(githubUsername: string): Promise<GithubRepo[]> {
   try {
     const response = await fetch(
       `https://api.github.com/users/${githubUsername}/repos`,
@@ -18,9 +23,10 @@ async function fetchUserRepos(githubUsername: string) {
     if (!response.ok) {
       throw new Error("Failed to fetch repositories");
     }
+    const repos: Array<{ name: string; full_name: string; html_url: string }> =
+      await response.json();
 
-    const repos = await response.json();
-    return repos.map((repo: any) => ({
+    return repos.map((repo) => ({
       name: repo.name,
       full_name: repo.full_name,
       html_url: repo.html_url,

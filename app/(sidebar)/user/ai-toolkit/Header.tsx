@@ -15,7 +15,7 @@ export default function Header() {
 
     const fetchCredits = async () => {
       if (!session?.user?.id) return;
-      
+
       try {
         setLoading(true);
         const headers: HeadersInit = {
@@ -28,24 +28,26 @@ export default function Header() {
           headers["sb-access-token"] = session.supabaseAccessToken;
         }
 
-        const response = await fetch('/api/ai-toolkit/credits', {
-          method: 'GET',
+        const response = await fetch("/api/ai-toolkit/credits", {
+          method: "GET",
           headers,
-          signal: controller.signal
+          signal: controller.signal,
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch credits');
+          throw new Error("Failed to fetch credits");
         }
 
         const data = await response.json();
         if (isMounted) {
           setCredits(data.credits);
         }
-      } catch (error: any) {
-        if (error.name !== 'AbortError' && isMounted) {
-          console.error('Error fetching credits:', error);
-          setCredits(null);
+      } catch (error: unknown) {
+        if (isMounted) {
+          if (error instanceof Error && error.name !== "AbortError") {
+            console.error("Error fetching credits:", error);
+            setCredits(null);
+          }
         }
       } finally {
         if (isMounted) {
@@ -67,31 +69,31 @@ export default function Header() {
 
   const handleAddCredits = async () => {
     if (!session?.user?.id) return;
-    
+
     try {
       setLoading(true);
       const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-        "user-id": session.user.id
+        "Content-Type": "application/json",
+        "user-id": session.user.id,
       };
 
       if (session.supabaseAccessToken) {
         headers["sb-access-token"] = session.supabaseAccessToken;
       }
 
-      const response = await fetch('/api/ai-toolkit/credits', {
-        method: 'POST',
+      const response = await fetch("/api/ai-toolkit/credits", {
+        method: "POST",
         headers,
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add credits');
+        throw new Error("Failed to add credits");
       }
 
       const data = await response.json();
       setCredits(data.credits);
     } catch (error) {
-      console.error('Error adding credits:', error);
+      console.error("Error adding credits:", error);
     } finally {
       setLoading(false);
     }
@@ -114,7 +116,7 @@ export default function Header() {
             <span className="font-medium">...</span>
           ) : (
             <span className="font-medium text-purple-200 drop-shadow-[0_0_5px_rgba(192,132,252,0.6)]">
-              {credits !== null ? credits.toLocaleString() : 'N/A'}
+              {credits !== null ? credits.toLocaleString() : "N/A"}
             </span>
           )}
           <span className="text-gray-400 text-sm">credits remaining</span>

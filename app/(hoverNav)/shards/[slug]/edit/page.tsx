@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Pencil, PencilIcon } from "lucide-react";
+import { PencilIcon } from "lucide-react";
 
 export default async function EditShardPage({
   params,

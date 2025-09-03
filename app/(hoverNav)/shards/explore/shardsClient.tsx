@@ -7,8 +7,19 @@ import { Label } from "@/components/ui/label";
 import { LayoutDashboard, LayoutGrid } from "lucide-react";
 import FadeInOnScroll from "@/components/FadeInOnScroll";
 
+interface Shard {
+  id: string | number;
+  slug: string;
+  title: string;
+  desc: string;
+  image_url?: string[];
+  users: {
+    username: string;
+  };
+}
+
 interface Props {
-  shards: any[];
+  shards: Shard[];
 }
 
 export default function ShardsClient({ shards }: Props) {

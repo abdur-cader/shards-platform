@@ -55,7 +55,7 @@ export default async function EditProfilePage() {
     .select("*", { count: "exact", head: true })
     .eq("user_id", session.user.id);
 
-  const profileUrl = `${process.env.NEXTAUTH_URL}/users/${user.username}`;
+  const profileUrl = `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/users/${user.username}`;
 
   return (
     <div className="min-h-screen min-w-screen bg-zinc-950/90 text-zinc-100 p-4 md:p-8">

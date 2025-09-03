@@ -1,17 +1,28 @@
 import ShardComponent from "@/components/Shard-component";
-import { supabase } from "@/lib/supabase";
 import { auth } from "@/auth";
 import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
-import {
-  Calendar,
-  Edit,
-  Heart,
-  Save,
-  Sparkles,
-  User,
-  CalendarDays,
-} from "lucide-react";
+import { Edit, Sparkles, User, CalendarDays } from "lucide-react";
+
+interface Shard {
+  slug: string;
+  title: string;
+  desc: string;
+  image_url?: string[];
+}
+
+interface User {
+  id: string;
+  username: string;
+  name: string;
+  image?: string;
+  bio?: string;
+  created_at: string;
+}
+
+interface Props {
+  shards: Shard[];
+  user: User;
+}
 
 export default async function UserProfilePage({
   params,
@@ -23,7 +34,7 @@ export default async function UserProfilePage({
 
   // Fetch user data
   const userJson = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/user?username=${username}`,
+    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/user?username=${username}`,
     {
       headers: {
         "sb-access-token": session?.supabaseAccessToken ?? "",
@@ -46,7 +57,7 @@ export default async function UserProfilePage({
           </div>
           <h2 className="text-2xl font-bold mb-2">User Not Found</h2>
           <p className="text-zinc-400 mb-6">
-            We couldn't find the user you're looking for.
+            We couldn&apos;t find the user you&apos;re looking for.
           </p>
           <Link
             href="/"
@@ -62,7 +73,7 @@ export default async function UserProfilePage({
 
   // Fetch user's shards
   const shardRes = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/user/shards?user_id=${user.id}`,
+    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/user/shards?user_id=${user.id}`,
     {
       headers: {
         "sb-access-token": session?.supabaseAccessToken ?? "",
@@ -153,7 +164,7 @@ export default async function UserProfilePage({
 
           {shards?.length ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {shards.map((shard: any) => (
+              {shards.map((shard: Shard) => (
                 <ShardComponent
                   key={shard.slug}
                   slug={shard.slug}

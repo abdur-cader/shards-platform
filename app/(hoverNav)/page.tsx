@@ -1,5 +1,6 @@
 import HeroMain from "@/components/HeroMain";
 import { TextShimmerWave } from "@/components/ui/text-shimmer-wave";
+import Image from "next/image";
 import {
   Github,
   Sparkles,
@@ -95,8 +96,9 @@ export default function Home() {
               Why developers love Shards
             </h2>
             <p className="text-muted-foreground dark:text-muted-foreground text-center text-lg max-w-2xl mx-auto mb-16">
-              We've built the platform developers actually want - showcasing
-              code, getting quality feedback, and discovering inspiration.
+              We&apos;ve built the platform developers actually want -
+              showcasing code, getting quality feedback, and discovering
+              inspiration.
             </p>
           </FadeInOnScroll>
 
@@ -163,9 +165,11 @@ export default function Home() {
                 {/* Adjusted left to -30%, increased width to 180% */}
                 <div className="w-full aspect-video bg-gradient-to-br from-lime-400 to-emerald-400 dark:from-theme-primary dark:to-emerald-400 rounded-2xl shadow-xl overflow-hidden">
                   <div className="absolute inset-0 bg-white rounded-lg flex items-center justify-center p-2">
-                    <img
+                    <Image
                       src="/ss1.png"
                       alt="Project Showcase"
+                      width={0} // required but overridden by className
+                      height={0} // required but overridden by className
                       className="w-[150%] h-[150%] object-contain"
                     />
                   </div>
@@ -180,7 +184,7 @@ export default function Home() {
                 <p className="text-gray-600 dark:text-gray-600 font-hind mb-6">
                   Shards transforms your GitHub projects into visually appealing
                   portfolio items that go beyond standard README files. Showcase
-                  your work in a format that's both developer-friendly and
+                  your work in a format that&apos;s both developer-friendly and
                   visually engaging.
                 </p>
                 <button className="flex items-center text-lime-600 dark:text-theme-primary font-medium group">
@@ -224,9 +228,11 @@ export default function Home() {
                 {/* Adjusted right to -30%, increased width to 180% */}
                 <div className="w-full aspect-video bg-gradient-to-br from-purple-400 to-purple-600 dark:from-purple-500 dark:to-purple-700 rounded-2xl shadow-xl overflow-hidden">
                   <div className="absolute inset-0 bg-white rounded-lg flex items-center justify-center p-2">
-                    <img
+                    <Image
                       src="/ss2.png"
                       alt="AI Analysis"
+                      width={0} // required but overridden by className
+                      height={0} // required but overridden by className
                       className="w-[150%] h-[150%] object-contain"
                     />
                   </div>
@@ -245,9 +251,11 @@ export default function Home() {
                 {/* Adjusted left to -30%, increased width to 180% */}
                 <div className="w-full aspect-video bg-gradient-to-br from-lime-400 to-emerald-400 dark:from-theme-primary dark:to-emerald-400 rounded-2xl shadow-xl overflow-hidden">
                   <div className="absolute inset-0 bg-white rounded-lg flex items-center justify-center p-2">
-                    <img
+                    <Image
                       src="/ss3.png"
                       alt="Community Hub"
+                      width={0} // required but overridden by className
+                      height={0} // required but overridden by className
                       className="w-[150%] h-[150%] object-contain"
                     />
                   </div>
@@ -262,7 +270,7 @@ export default function Home() {
                 <p className="text-gray-600 dark:text-gray-600 mb-6">
                   Discover projects from developers around the world, share
                   feedback, and collaborate on ideas. Shards is more than a
-                  portfolio platform—it's a community focused on growth and
+                  portfolio platform—it&apos;s a community focused on growth and
                   learning.
                 </p>
                 <button className="flex items-center text-lime-600 dark:text-theme-primary font-medium group">
@@ -297,10 +305,10 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-60">
               <div>
                 <h3 className="text-3xl font-[500] mb-6 text-gray-900 dark:text-purple-50">
-                  (It's basically for anyone)
+                  (It&apos;s basically for anyone)
                 </h3>
                 <p className="text-gray-700 dark:text-purple-200 mb-6">
-                  Whether you're just starting out or have been coding for
+                  Whether you&apos;re just starting out or have been coding for
                   years, Shards provides value through its unique combination of
                   portfolio showcasing and AI-powered feedback.
                 </p>

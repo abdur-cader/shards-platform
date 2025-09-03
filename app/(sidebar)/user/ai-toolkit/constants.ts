@@ -1,5 +1,5 @@
 // app/(sidebar)/user/ai-toolkit/constants.ts
-import { Brain, Code, FileText, FlaskConical, Terminal } from "lucide-react";
+import { Brain, Code, FileText, FlaskConical } from "lucide-react";
 
 export const tools = [
   {
