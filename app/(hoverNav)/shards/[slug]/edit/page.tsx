@@ -15,12 +15,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { PencilIcon } from "lucide-react";
 
-export default async function EditShardPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const { slug } = params;
+// Add this interface to define the expected params
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function EditShardPage({ params }: PageProps) {
+  // Await the params promise
+  const { slug } = await params;
 
   const { data: shard, error } = await supabase
     .from("shards")
@@ -56,7 +58,6 @@ export default async function EditShardPage({
   }
 
   return (
-    // slight super dark lime gradient to super dark almost black lime
     <div className="min-h-screen flex items-center bg-gradient-to-br from-[#e6f4e6] to-[#d4e9d4] dark:bg-gradient-to-br dark:from-[#071407] dark:to-[#010301] justify-center p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader className="space-y-1">
