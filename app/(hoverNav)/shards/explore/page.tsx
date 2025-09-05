@@ -1,15 +1,42 @@
-import { supabase } from "@/lib/supabase";
 import ShardsClient from "./shardsClient";
 import { BGPattern } from "@/components/bg-pattern";
 
-export default async function ShardsPage() {
-  const { data: shards, error } = await supabase
-    .from("shards")
-    .select("*, users(username)")
-    .eq("is_visible", true)
-    .order("title", { ascending: false });
+async function getShards() {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/shards/explore`,
+      {
+        next: { revalidate: 60 }, // Optional: add revalidation for ISR
+      }
+    );
 
-  if (error) return <div>failed to load Shards: {error.message}</div>;
+    if (!response.ok) {
+      throw new Error(`Failed to fetch shards: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.shards;
+  } catch (error) {
+    console.error("Error fetching shards:", error);
+    throw error;
+  }
+}
+
+export default async function ShardsPage() {
+  let shards;
+  try {
+    shards = await getShards();
+  } catch (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="max-w-xl w-full p-6 bg-red-100 border border-red-400 text-red-800 rounded-lg shadow-sm text-center">
+          <p className="text-lg font-semibold">Failed to load Shards</p>
+          <p className="mt-2 text-sm">{(error as Error).message}</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!shards || shards.length === 0) return <div>no shards found</div>;
 
   return (

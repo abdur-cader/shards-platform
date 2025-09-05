@@ -25,6 +25,7 @@ import { FileUploader } from "./FileUploader";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 const shardSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -43,6 +44,7 @@ interface ShardFormProps {
 export default function ShardForm({ repos }: ShardFormProps) {
   const { data: session } = useSession();
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<ShardFormData & { files?: File[] }>({
     resolver: zodResolver(shardSchema),
@@ -56,6 +58,9 @@ export default function ShardForm({ repos }: ShardFormProps) {
   });
 
   const onSubmit = async (formData: ShardFormData & { files?: File[] }) => {
+    setIsSubmitting(true);
+    const toastId = toast.loading("Creating your Shard...");
+
     console.log("Valid Form Data:", formData);
 
     const slug = formData.title.trim().toLowerCase().replace(/\s+/g, "-");
@@ -66,6 +71,8 @@ export default function ShardForm({ repos }: ShardFormProps) {
       // Handle file uploads if files exist
       console.log("FILES INSIDE FORM DATA:", formData.files);
       if (formData.files && formData.files.length > 0) {
+        toast.loading("Uploading files...", { id: toastId });
+
         for (const file of formData.files) {
           if (!file) continue;
 
@@ -81,7 +88,8 @@ export default function ShardForm({ repos }: ShardFormProps) {
           if (uploadError) {
             console.error("Upload error:", uploadError);
             toast.error(
-              `Upload failed for ${file.name}: ${uploadError.message}`
+              `Upload failed for ${file.name}: ${uploadError.message}`,
+              { id: toastId }
             );
             continue;
           }
@@ -112,18 +120,23 @@ export default function ShardForm({ repos }: ShardFormProps) {
         user_github_id: session?.user?.github_id,
       };
 
+      toast.loading("Saving your Shard...", { id: toastId });
+
       const { error: insertError } = await supabase
         .from("shards")
         .insert([dbData]);
 
       if (insertError) {
-        toast.error(`Insert failed: ${insertError.message}`);
+        toast.error(`Insert failed: ${insertError.message}`, { id: toastId });
       } else {
-        toast.success("Your Shard has been created");
+        toast.success("Your Shard has been created", { id: toastId });
         router.push(`/shards/${slug}?edit=1`);
       }
     } catch (error) {
       console.error("Error creating Shard:", error);
+      toast.error("Failed to create Shard. Please try again.", { id: toastId });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -202,8 +215,12 @@ export default function ShardForm({ repos }: ShardFormProps) {
           }}
         />
 
-        <Button type="submit" className="px-4 py-2 rounded-4xl cursor-pointer">
-          Create Shard
+        <Button
+          type="submit"
+          className="px-4 py-2 rounded-4xl cursor-pointer"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Creating..." : "Create Shard"}
         </Button>
       </form>
     </Form>

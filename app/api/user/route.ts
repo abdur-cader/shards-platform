@@ -7,7 +7,7 @@ export async function GET(req: Request) {
     const purpose = req.headers.get("purpose") // either "edit" or "view"
     const single = req.headers.get("single") === "true";
 
-
+    console.log("API/USER IS CALLED!!!!!!!!!!")
 
 
     console.log("session id:", userId)

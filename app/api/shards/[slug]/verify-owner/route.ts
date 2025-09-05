@@ -1,18 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
-export async function POST(
-  req: Request,
-  { params }: { params: { slug: string } }
-) {
+export async function POST(req: Request) {
   const token = req.headers.get("sb-access-token");
   const { userId } = await req.json();
 
   if (!userId) {
-    return NextResponse.json(
-      { error: "User ID is required" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "User ID is required" }, { status: 400 });
   }
 
   const supabase = token
@@ -33,11 +27,17 @@ export async function POST(
       );
 
   try {
-    // Get the shard to check ownership
+    // extract slug from URL
+    const url = new URL(req.url);
+    const slug = url.pathname.split("/")[4]; // /api/shards/[slug]/verify-owner
+    if (!slug) {
+      return NextResponse.json({ error: "Slug is required" }, { status: 400 });
+    }
+
     const { data: shard, error } = await supabase
       .from("shards")
       .select("user_id")
-      .eq("slug", params.slug.trim())
+      .eq("slug", slug.trim())
       .single();
 
     if (error || !shard) {
@@ -47,7 +47,6 @@ export async function POST(
       );
     }
 
-    // Verify ownership
     const isOwner = shard.user_id === userId;
 
     return NextResponse.json({ isOwner });

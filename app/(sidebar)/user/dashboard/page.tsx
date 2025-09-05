@@ -4,20 +4,25 @@ import { DashboardClient } from "./DashboardClient";
 
 async function fetchUserData(
   userId: string,
-  supabaseAccessToken: string
+  supabaseAccessToken: string,
+  columns?: string[]
 ): Promise<UserData> {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/user`,
+    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/user/dashboard`,
     {
       headers: {
         "session-id": userId,
         "sb-access-token": supabaseAccessToken,
-        purpose: "edit",
-        single: "true",
       },
     }
   );
-  if (!response.ok) throw new Error("Failed to fetch user data");
+
+  if (!response.ok) {
+    const errText = await response.text();
+    console.error("Failed to fetch user data:", errText);
+    throw new Error("Failed to fetch user data");
+  }
+
   return response.json();
 }
 

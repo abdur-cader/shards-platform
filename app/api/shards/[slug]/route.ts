@@ -1,10 +1,10 @@
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
+
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ slug: string }> }
 ) {
-
     console.log("NEW")
     const token = req.headers.get("sb-access-token");
 
@@ -35,7 +35,6 @@ export async function GET(
 
     if (error || !shard) {
         return NextResponse.json({ error: error?.message || "Not Found" }, { status: 404 });
-
     }
 
     return NextResponse.json({ shard });
@@ -43,7 +42,7 @@ export async function GET(
 
 export async function POST(
     req: Request,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> } // Changed to Promise
 ) {
     const token = req.headers.get("sb-access-token")
 
@@ -67,11 +66,14 @@ export async function POST(
     try {
         const body = await req.json();
         const { content } = body;
+        
+        // Await the params to get the slug
+        const slug = (await params).slug;
 
         const { data, error } = await supabase
             .from("shards")
             .update({ content })
-            .eq("slug", params.slug.trim())
+            .eq("slug", slug.trim()) // Use the awaited slug
             .single();
 
         if (error) throw error;

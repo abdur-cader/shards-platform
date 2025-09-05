@@ -18,6 +18,21 @@ const Navbar = ({ className }: { className?: string }) => {
   const [active, setActive] = useState<string | null>(null);
   const { data: session, status } = useSession();
 
+  const products = [
+    {
+      title: "Citera",
+      href: "https://citely-ai-169c.vercel.app/",
+      src: "https://wjlwqhmtlzsiyhzwtety.supabase.co/storage/v1/object/public/shard-image-uploads/featured_sites/citera_home.png",
+      description: "Put 99% of your time into writing, and 1% into citations.",
+    },
+    // {
+    //   title: "Algochurn",
+    //   href: "https://algochurn.com",
+    //   src: "https://assets.aceternity.com/demos/algochurn.webp",
+    //   description: "Prepare for tech interviews like never before.",
+    // },
+  ];
+
   return (
     <div
       className={cn(
@@ -26,7 +41,9 @@ const Navbar = ({ className }: { className?: string }) => {
       )}
     >
       <Menu setActive={setActive}>
-        <Link href="/pricing" className="text-white">Pricing</Link>
+        <Link href="/pricing" className="text-white">
+          Pricing
+        </Link>
         <MenuItem setActive={setActive} active={active} item="Shards">
           <div className="flex flex-col space-y-4 text-sm">
             <HoveredLink href="/shards/explore">Explore Shards</HoveredLink>
@@ -34,38 +51,26 @@ const Navbar = ({ className }: { className?: string }) => {
           </div>
         </MenuItem>
         <MenuItem setActive={setActive} active={active} item="Featured Sites">
-          <div className="text-sm grid grid-cols-2 gap-10 font-prompt text-[200] p-4">
-            <ProductItem
-              title="Algochurn"
-              href="https://algochurn.com"
-              src="https://assets.aceternity.com/demos/algochurn.webp"
-              description="Prepare for tech interviews like never before."
-            />
-            <ProductItem
-              title="Tailwind Master Kit"
-              href="https://tailwindmasterkit.com"
-              src="https://assets.aceternity.com/demos/tailwindmasterkit.webp"
-              description="Production ready Tailwind CSS components for your next project"
-            />
-            <ProductItem
-              title="Moonbeam"
-              href="https://gomoonbeam.com"
-              src="https://assets.aceternity.com/demos/Screenshot+2024-02-21+at+11.51.31%E2%80%AFPM.png"
-              description="Never write from scratch again. Go from idea to blog in minutes."
-            />
-            <ProductItem
-              title="Rogue"
-              href="https://userogue.com"
-              src="https://assets.aceternity.com/demos/Screenshot+2024-02-21+at+11.47.07%E2%80%AFPM.png"
-              description="Respond to government RFPs, RFIs and RFQs 10x faster using AI"
-            />
+          <div
+            className={`text-sm grid gap-10 font-prompt text-[200] p-4 ${
+              products.length === 1 ? "grid-cols-1" : "grid-cols-2"
+            }`}
+          >
+            {products.map((product) => (
+              <ProductItem key={product.title} {...product} />
+            ))}
           </div>
         </MenuItem>
         {status === "loading" ? null : session?.user ? (
           <MenuItem
             setActive={setActive}
             active={active}
-            item={session.user?.name ? session.user.name.charAt(0).toLocaleUpperCase() + session.user.name.slice(1) : "User"}
+            item={
+              session.user?.name
+                ? session.user.name.charAt(0).toLocaleUpperCase() +
+                  session.user.name.slice(1)
+                : "User"
+            }
           >
             <div className="flex flex-col space-y-4 text-sm">
               <HoveredLink href={`/user/${session?.user?.github_login}`}>
