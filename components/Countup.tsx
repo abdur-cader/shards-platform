@@ -20,7 +20,7 @@ const Countup = () => {
         <span className="text-3xl font-bold text-white mr-1">
           <CountUp
             end={20000}
-            duration={15}
+            duration={6}
             easingFn={fasterEasing}
             enableScrollSpy
             scrollSpyOnce

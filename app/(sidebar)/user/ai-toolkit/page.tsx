@@ -23,6 +23,7 @@ interface SavedStack {
   id: string;
   created_at: string;
   object: {
+    title: string;
     backend: string;
     database: string;
     frontend: string;
@@ -257,33 +258,36 @@ export default function AIToolkitPage() {
   const recentStacks = savedStacks.slice(0, 3);
 
   return (
-    <div className="min-h-screen min-w-screen text-gray-100 relative overflow-x-hidden overflow-y-auto">
-      {/* Shader Animation Background */}
+    <div className="min-h-screen min-w-screen text-gray-100 relative overflow-x-hidden">
+      {/* Shader Animation Background - Fixed */}
       <div ref={containerRef} className="fixed inset-0 w-full h-full z-0" />
 
-      {/* Content Overlay */}
+      {/* Gradient Overlay - Fixed */}
       <div
-        className="absolute inset-0 z-10"
+        className="fixed inset-0 z-10"
         style={{
           background: `
-            radial-gradient(
-              circle at ${gradientPos.x}% ${gradientPos.y}%, 
-              rgba(139, 92, 246, 0.15) 0%, 
-              rgba(16, 22, 37, 0.85) 30%,
-              rgba(18, 11, 34, 0.95) 80%
-            ),
-            linear-gradient(
-              to bottom right,
-              rgba(15, 23, 42, 0.58) 0%,
-              rgba(30, 27, 75, 0.7) 50%,
-              rgba(15, 23, 42, 0.9) 100%
-            )
-          `,
+          radial-gradient(
+            circle at ${gradientPos.x}% ${gradientPos.y}%, 
+            rgba(139, 92, 246, 0.15) 0%, 
+            rgba(16, 22, 37, 0.85) 30%,
+            rgba(18, 11, 34, 0.95) 80%
+          ),
+          linear-gradient(
+            to bottom right,
+            rgba(15, 23, 42, 0.58) 0%,
+            rgba(30, 27, 75, 0.7) 50%,
+            rgba(15, 23, 42, 0.9) 100%
+          )
+        `,
         }}
       >
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] pointer-events-none"></div>
+      </div>
 
-        <div className="container mx-auto px-4 py-8 max-w-7xl relative z-20">
+      {/* Scrollable Content Container */}
+      <div className="relative z-20 overflow-y-auto h-screen">
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
           <Header />
 
           <main className="space-y-12">
@@ -387,7 +391,8 @@ export default function AIToolkitPage() {
                       >
                         <div className="flex justify-between items-start mb-4">
                           <h3 className="font-bold text-purple-200 text-lg">
-                            Tech Stack
+                            {stack.object.title || "Tech Stack"}{" "}
+                            {/* Use title if available */}
                           </h3>
                           <span className="text-xs text-gray-400 bg-gray-900 px-2 py-1 rounded">
                             {new Date(stack.created_at).toLocaleDateString()}
@@ -443,8 +448,16 @@ export default function AIToolkitPage() {
                               <span className="text-purple-400 font-medium">
                                 Reasoning:
                               </span>
-                              <p className="text-gray-400 mt-1">
-                                {stack.object.reasoning}
+                              <p
+                                className="text-gray-400 mt-1 truncate"
+                                title={stack.object.reasoning}
+                              >
+                                {stack.object.reasoning.length > 100
+                                  ? `${stack.object.reasoning.substring(
+                                      0,
+                                      100
+                                    )}...`
+                                  : stack.object.reasoning}
                               </p>
                             </div>
                           )}

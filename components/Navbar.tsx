@@ -22,7 +22,7 @@ const Navbar = ({ className }: { className?: string }) => {
     {
       title: "Citera",
       href: "https://citely-ai-169c.vercel.app/",
-      src: "https://wjlwqhmtlzsiyhzwtety.supabase.co/storage/v1/object/public/shard-image-uploads/featured_sites/citera_home.png",
+      src: "/citera_home.png",
       description: "Put 99% of your time into writing, and 1% into citations.",
     },
     // {
@@ -41,13 +41,10 @@ const Navbar = ({ className }: { className?: string }) => {
       )}
     >
       <Menu setActive={setActive}>
-        <Link href="/pricing" className="text-white">
-          Pricing
-        </Link>
         <MenuItem setActive={setActive} active={active} item="Shards">
           <div className="flex flex-col space-y-4 text-sm">
             <HoveredLink href="/shards/explore">Explore Shards</HoveredLink>
-            <HoveredLink href="/shards/create">Create</HoveredLink>
+            <HoveredLink href="/shards/create">Create New</HoveredLink>
           </div>
         </MenuItem>
         <MenuItem setActive={setActive} active={active} item="Featured Sites">
@@ -76,7 +73,8 @@ const Navbar = ({ className }: { className?: string }) => {
               <HoveredLink href={`/user/${session?.user?.github_login}`}>
                 My Profile
               </HoveredLink>
-              <HoveredLink href="/account">Account</HoveredLink>
+              <HoveredLink href="/user/dashboard">Dashboard</HoveredLink>
+              <HoveredLink href="/user/ai-toolkit">AI-Toolkit</HoveredLink>
               <button
                 onClick={() => {
                   const delayedSignOut = () =>

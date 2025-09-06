@@ -29,54 +29,62 @@ const lowlight = createLowlight(common);
 interface Props {
   initialMarkdown: string;
   slug: string;
+  isOwner: boolean;
 }
 
-export default function ShardContent({ initialMarkdown, slug }: Props) {
+export default function ShardContent({
+  initialMarkdown,
+  slug,
+  isOwner,
+}: Props) {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const isEditing = searchParams?.get("edit") === "1";
 
   const [content, setContent] = useState<any>(null);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
-  const [isOwner, setIsOwner] = useState(false);
-  const [isCheckingOwner, setIsCheckingOwner] = useState(false);
+  // const [isOwner, setIsOwner] = useState(false);
+  // const [isCheckingOwner, setIsCheckingOwner] = useState(false);
 
-  // Check ownership when session or slug changes
-  useEffect(() => {
-    const verifyOwnership = async () => {
-      if (!session?.user?.id) {
-        setIsOwner(false);
-        return;
-      }
+  // // Check ownership when session or slug changes
+  // useEffect(() => {
+  //   const verifyOwnership = async () => {
+  //     if (!session?.user?.id) {
+  //       setIsOwner(false);
+  //       return;
+  //     }
 
-      setIsCheckingOwner(true);
-      try {
-        const headers: HeadersInit = {
-          "Content-Type": "application/json",
-        };
+  //     setIsCheckingOwner(true);
+  //     try {
+  //       const headers: HeadersInit = {
+  //         "Content-Type": "application/json",
+  //       };
 
-        if (session?.supabaseAccessToken) {
-          headers["sb-access-token"] = session.supabaseAccessToken;
-        }
+  //       if (session?.supabaseAccessToken) {
+  //         headers["sb-access-token"] = session.supabaseAccessToken;
+  //       }
 
-        const response = await fetch(`/api/shards/${slug}/verify-owner`, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ userId: session.user.id }),
-        });
+  //       const response = await fetch(
+  //         `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/shards/${slug}/verify-owner`,
+  //         {
+  //           method: "POST",
+  //           headers,
+  //           body: JSON.stringify({ userId: session.user.id }),
+  //         }
+  //       );
 
-        const data = await response.json();
-        setIsOwner(data.isOwner);
-      } catch (error) {
-        console.error("Error verifying ownership:", error);
-        setIsOwner(false);
-      } finally {
-        setIsCheckingOwner(false);
-      }
-    };
+  //       const data = await response.json();
+  //       setIsOwner(data.isOwner);
+  //     } catch (error) {
+  //       console.error("Error verifying ownership:", error);
+  //       setIsOwner(false);
+  //     } finally {
+  //       setIsCheckingOwner(false);
+  //     }
+  //   };
 
-    verifyOwnership();
-  }, [session, slug]);
+  //   verifyOwnership();
+  // }, [session, slug]);
 
   // unified extensions config
   const extensions = [
@@ -302,7 +310,7 @@ export default function ShardContent({ initialMarkdown, slug }: Props) {
     <div className="tableWrapper">
       <EditorContent editor={readOnlyEditor} />
 
-      {isOwner && !isCheckingOwner && (
+      {isOwner && (
         <button
           onClick={() => {
             const url = new URL(window.location.href);
@@ -310,15 +318,15 @@ export default function ShardContent({ initialMarkdown, slug }: Props) {
             window.location.href = url.href;
           }}
           className="mt-4 mr-4 mb-4 ml-1 px-6 py-1 relative overflow-hidden rounded-lg 
-              border border-gray-600
-              bg-gradient-to-r from-zinc-800 to-zinc-700 
-              text-zinc-100 shadow-md
-              transition-all duration-300 ease-in-out
-              hover:scale-105 
-              hover:from-lime-800 hover:to-lime-700
-              hover:border-lime-500
-              group text-sm
-            "
+        border border-gray-600
+        bg-gradient-to-r from-zinc-800 to-zinc-700 
+        text-zinc-100 shadow-md
+        transition-all duration-300 ease-in-out
+        hover:scale-105 
+        hover:from-lime-800 hover:to-lime-700
+        hover:border-lime-500
+        group text-sm
+      "
         >
           Edit
         </button>

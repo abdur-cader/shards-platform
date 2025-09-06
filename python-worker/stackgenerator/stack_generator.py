@@ -36,6 +36,7 @@ class StackGenerator:
             ### Output Format
             Return the response as a **valid JSON object** with this structure:
             {{
+            "title": "string (a descriptive title for this project/stack)",
             "frontend": "string",
             "backend": "string",
             "database": "string",

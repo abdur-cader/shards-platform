@@ -202,6 +202,7 @@ export default async function ShardDetailPage({ params }: Props) {
             <ShardContent
               initialMarkdown={shard.content || ""}
               slug={shard.slug}
+              isOwner={isOwner}
             />
           </div>
         </div>
