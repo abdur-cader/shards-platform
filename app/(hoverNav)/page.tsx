@@ -157,30 +157,30 @@ export default function Home() {
 
           {/* First Screenshot Section - Left image, right text */}
           <FadeInOnScroll>
-            <div className="flex flex-col md:flex-row items-center gap-8 mb-15 relative">
-              <div className="md:w-4/5 relative md:left-[-30%] w-[180%]">
+            <div className="flex flex-col md:flex-row items-center gap-8 mb-120 mt-60 relative">
+              <div className="md:w-4/5 relative md:left-[-30%] w-[180%] scale-120 origin-left">
                 <div className="w-full aspect-video rounded-2xl overflow-hidden flex items-center justify-center">
-                  <Image
-                    src="/shardview.png"
-                    alt="Project Showcase"
-                    width={1920}
-                    height={950}
-                    priority={true}
-                    className="w-full h-full object-cover rounded-2xl"
+                  <video
+                    src="/shardviewanimate.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover rounded-2xl pointer-events-none select-none"
                   />
                 </div>
               </div>
               <div className="md:w-1/2 md:pr-8 md:ml-[-10%]">
-                <h3 className="text-2xl font-[500] mb-4 text-foreground dark:text-foreground">
+                <h3 className="text-3xl font-[500] mb-4 text-foreground dark:text-foreground">
                   Turn repositories into portfolio pieces
                 </h3>
-                <p className="text-gray-600 dark:text-gray-600 font-hind mb-6">
+                <p className="text-gray-600 text-lg dark:text-gray-600 font-hind mb-6">
                   Shards transforms your GitHub projects into visually appealing
                   portfolio items that go beyond standard README files. Showcase
                   your work in a format that&apos;s both developer-friendly and
                   visually engaging.
                 </p>
-                <button className="flex items-center text-lime-600 dark:text-theme-primary font-medium group">
+                <button className="flex text-lg items-center text-lime-600 dark:text-theme-primary font-medium group">
                   See how it works
                   <ArrowRight
                     size={18}
@@ -191,14 +191,10 @@ export default function Home() {
             </div>
           </FadeInOnScroll>
 
-          {/* Second Screenshot Section - Right image, left text */}
+          {/* Second Screenshot Section - Right video, left text */}
           <FadeInOnScroll>
-            <div className="flex flex-col md:flex-row items-center gap-8 mb-28 relative">
-              {" "}
-              {/* Reduced gap from 12 to 8 */}
-              <div className="md:w-1/2 order-2 md:order-1 md:pl-8 md:mr-[-10%] z-10">
-                {" "}
-                {/* Added negative margin and z-index */}
+            <div className="flex flex-col md:flex-row items-center gap-8 mb-120 relative">
+              <div className="md:w-1/2 order-2 md:order-1 md:pl-8 scale-120 origin-left md:mr-[-10%] z-10">
                 <h3 className="text-2xl font-[500] mb-4 text-foreground dark:text-foreground">
                   Get AI-powered code insights
                 </h3>
@@ -216,57 +212,47 @@ export default function Home() {
                   />
                 </button>
               </div>
-              <div className="md:w-4/5 relative order-1 md:order-2 md:right-[-30%] w-[180%]">
-                {" "}
-                {/* Adjusted right to -30%, increased width to 180% */}
-                <div className="w-full aspect-video bg-gradient-to-br from-purple-400 to-purple-600 dark:from-purple-500 dark:to-purple-700 rounded-2xl shadow-xl overflow-hidden">
-                  <div className="absolute inset-0 bg-white rounded-lg flex items-center justify-center p-2">
-                    <Image
-                      src="/ss2.png"
-                      alt="AI Analysis"
-                      width={0} // required but overridden by className
-                      height={0} // required but overridden by className
-                      className="w-[150%] h-[150%] object-contain"
-                    />
-                  </div>
+              <div className="md:w-4/5 relative order-1 md:order-2 md:right-[-30%] w-[180%] scale-120 origin-left">
+                <div className="w-full aspect-video rounded-2xl overflow-hidden flex items-center justify-center">
+                  <video
+                    src="/shardviewanimate.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-[120%] h-[120%] object-cover rounded-2xl pointer-events-none select-none"
+                  />
                 </div>
               </div>
             </div>
           </FadeInOnScroll>
 
-          {/* Third Screenshot Section - Left image, right text */}
+          {/* Third Screenshot Section - Left video, right text */}
           <FadeInOnScroll>
-            <div className="flex flex-col md:flex-row items-center gap-8 relative">
-              {" "}
-              {/* Reduced gap from 12 to 8 */}
-              <div className="md:w-4/5 relative md:left-[-30%] w-[180%]">
-                {" "}
-                {/* Adjusted left to -30%, increased width to 180% */}
-                <div className="w-full aspect-video bg-gradient-to-br from-lime-400 to-emerald-400 dark:from-theme-primary dark:to-emerald-400 rounded-2xl shadow-xl overflow-hidden">
-                  <div className="absolute inset-0 bg-white rounded-lg flex items-center justify-center p-2">
-                    <Image
-                      src="/ss3.png"
-                      alt="Community Hub"
-                      width={0} // required but overridden by className
-                      height={0} // required but overridden by className
-                      className="w-[150%] h-[150%] object-contain"
-                    />
-                  </div>
+            <div className="flex flex-col md:flex-row items-center gap-8 mb-60 relative">
+              <div className="md:w-4/5 relative md:left-[-30%] w-[180%] scale-120 origin-left">
+                <div className="w-full aspect-video rounded-2xl overflow-hidden flex items-center justify-center">
+                  <video
+                    src="/shardviewanimate.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-[120%] h-[120%] object-cover rounded-2xl pointer-events-none select-none"
+                  />
                 </div>
               </div>
               <div className="md:w-1/2 md:pr-8 md:ml-[-10%]">
-                {" "}
-                {/* Added negative margin to pull text closer */}
-                <h3 className="text-2xl font-[500] mb-4 text-foreground dark:text-foreground">
+                <h3 className="text-3xl font-[500] mb-4 text-foreground dark:text-foreground">
                   Join a community of builders
                 </h3>
-                <p className="text-gray-600 dark:text-gray-600 mb-6">
+                <p className="text-gray-600 text-lg dark:text-gray-600 mb-6">
                   Discover projects from developers around the world, share
                   feedback, and collaborate on ideas. Shards is more than a
                   portfolio platform—it&apos;s a community focused on growth and
                   learning.
                 </p>
-                <button className="flex items-center text-lime-600 dark:text-theme-primary font-medium group">
+                <button className="flex text-lg items-center text-lime-600 dark:text-theme-primary font-medium group">
                   Join the community
                   <ArrowRight
                     size={18}
