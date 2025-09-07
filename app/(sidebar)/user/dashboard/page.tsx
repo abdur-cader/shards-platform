@@ -70,7 +70,7 @@ async function fetchChartData(
   supabaseAccessToken: string
 ): Promise<ChartData[]> {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/user/analytics?userId=${userId}`,
+    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/dashboard/analytics?userId=${userId}`,
     {
       headers: {
         Authorization: `Bearer ${supabaseAccessToken}`,
@@ -119,6 +119,54 @@ interface ChartData {
   date: string;
   likes: number;
   saves: number;
+  views: number;
+}
+
+interface SavedShardData {
+  id: string;
+  saved_at: string;
+  shard: {
+    id: string;
+    title: string;
+    desc: string | null;
+    slug: string;
+    github_repo: string | null;
+    created_at: string;
+    image_url: string | null;
+    is_visible: boolean;
+    user_id: string;
+    content: string | null;
+    updated_at: string;
+    user: {
+      username: string;
+      name: string;
+      image: string;
+    };
+  };
+}
+
+// Add this function to fetch saved shards
+async function fetchSavedShards(
+  userId: string,
+  supabaseAccessToken: string
+): Promise<SavedShardData[]> {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/dashboard/saved-shards`,
+    {
+      headers: {
+        Authorization: `Bearer ${supabaseAccessToken}`,
+        "session-id": userId,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to fetch saved shards");
+  }
+
+  const result = await response.json();
+  return result.savedShards || [];
 }
 
 async function fetchUserActivities(
@@ -156,13 +204,14 @@ export default async function DashboardPage() {
     redirect("/");
   }
 
-  const [userData, userStats, userShards, chartData, activities] =
+  const [userData, userStats, userShards, chartData, activities, savedShards] =
     await Promise.all([
       fetchUserData(session.user.id, session.supabaseAccessToken || ""),
       fetchUserStats(session.user.id, session.supabaseAccessToken || ""),
       fetchUserShards(session.user.id, session.supabaseAccessToken || ""),
       fetchChartData(session.user.id, session.supabaseAccessToken || ""),
       fetchUserActivities(session.user.id, session.supabaseAccessToken || ""),
+      fetchSavedShards(session.user.id, session.supabaseAccessToken || ""),
     ]);
 
   return (
@@ -172,6 +221,7 @@ export default async function DashboardPage() {
       userShards={userShards}
       chartData={chartData}
       activities={activities}
+      savedShards={savedShards}
     />
   );
 }

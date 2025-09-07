@@ -37,7 +37,18 @@ export async function GET(
         return NextResponse.json({ error: error?.message || "Not Found" }, { status: 404 });
     }
 
-    return NextResponse.json({ shard });
+    // Get view count
+    const { count: viewCount } = await supabase
+        .from("views")
+        .select('*', { count: 'exact' })
+        .eq('shard_id', shard.id);
+
+    return NextResponse.json({ 
+        shard: {
+            ...shard,
+            view_count: viewCount || 0
+        } 
+    });
 };
 
 export async function POST(

@@ -1,10 +1,10 @@
 import ShardsClient from "./shardsClient";
 import { BGPattern } from "@/components/bg-pattern";
 
-async function getShards() {
+async function getShards(page: number = 1, limit: number = 20) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/shards/explore`,
+      `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/shards/explore?page=${page}&limit=${limit}`,
       {
         next: { revalidate: 60 }, // Optional: add revalidation for ISR
       }
@@ -15,17 +15,26 @@ async function getShards() {
     }
 
     const data = await response.json();
-    return data.shards;
+    return data;
   } catch (error) {
     console.error("Error fetching shards:", error);
     throw error;
   }
 }
 
-export default async function ShardsPage() {
-  let shards;
+interface PageProps {
+  searchParams: {
+    page?: string;
+  };
+}
+
+export default async function ShardsPage({ searchParams }: PageProps) {
+  const currentPage = Number(searchParams.page) || 1;
+  const limit = 20;
+
+  let shardsData;
   try {
-    shards = await getShards();
+    shardsData = await getShards(currentPage, limit);
   } catch (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -36,6 +45,8 @@ export default async function ShardsPage() {
       </div>
     );
   }
+
+  const { shards, totalPages, totalShards } = shardsData;
 
   if (!shards || shards.length === 0) return <div>no shards found</div>;
 
@@ -53,7 +64,12 @@ export default async function ShardsPage() {
         mask="fade-center"
         className="absolute inset-0 z-0 pointer-events-none"
       />
-      <ShardsClient shards={shards} />
+      <ShardsClient
+        shards={shards}
+        currentPage={currentPage}
+        totalPages={totalPages || 1}
+        totalShards={totalShards || shards.length}
+      />
     </div>
   );
 }

@@ -44,8 +44,13 @@ import {
   Save,
   Sparkles,
   TrendingUp,
+  Bookmark,
+  ExternalLink,
+  Eye,
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import SavedShardsDrawer from "@/components/SavedShardsDrawer";
 
 interface DashboardClientProps {
   userData: {
@@ -83,12 +88,35 @@ interface DashboardClientProps {
     date: string;
     likes: number;
     saves: number;
+    views: number;
   }[];
   activities: {
     id: string;
     type: "created" | "liked" | "saved" | "updated" | "joined";
     created_at: string;
     shard_title?: string;
+  }[];
+  savedShards: {
+    id: string;
+    saved_at: string;
+    shard: {
+      id: string;
+      title: string;
+      desc: string | null;
+      slug: string;
+      github_repo: string | null;
+      created_at: string;
+      image_url: string | null;
+      is_visible: boolean;
+      user_id: string;
+      content: string | null;
+      updated_at: string;
+      user: {
+        username: string;
+        name: string;
+        image: string;
+      };
+    };
   }[];
 }
 
@@ -98,7 +126,10 @@ export function DashboardClient({
   userShards,
   chartData,
   activities,
+  savedShards,
 }: DashboardClientProps) {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   return (
     <div className="min-h-screen min-w-screen bg-gradient-to-br from-zinc-950 to-zinc-900 overflow-hidden">
       {/* Scrollable content */}
@@ -107,7 +138,7 @@ export function DashboardClient({
         style={{ maxHeight: "calc(100vh - 64px)" }}
       >
         <div className="flex justify-between items-center pb-8">
-          <h1 className="text-3xl md:text-4xl font-[500] font-prompt bg-clip-text text-zinc-200">
+          <h1 className="text-3xl md-text-4xl font-[500] font-prompt bg-clip-text text-zinc-200">
             Dashboard
           </h1>
         </div>
@@ -148,7 +179,7 @@ export function DashboardClient({
             </CardFooter>
           </Card>
 
-          {/* Stats Cards */}
+          {/* Quick Overview Cards - Replacing the repetitive cards */}
           <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm">
             <CardHeader className="pb-2">
               <CardDescription className="text-zinc-400">
@@ -159,12 +190,7 @@ export function DashboardClient({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-xs text-zinc-500 flex items-center">
-                <span className="text-lime-400 flex items-center">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  12% from last month
-                </span>
-              </div>
+              <div className="text-xs text-zinc-500 flex items-center"></div>
             </CardContent>
           </Card>
 
@@ -191,6 +217,7 @@ export function DashboardClient({
           </Card>
         </div>
 
+        {/* Saved Shards Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Recent Activity Card */}
           <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm lg:col-span-1">
@@ -290,79 +317,143 @@ export function DashboardClient({
             </CardContent>
           </Card>
 
-          {/* Enhanced Quick Stats Cards */}
+          {/* Saved Shards Card */}
           <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm lg:col-span-2">
             <CardHeader>
-              <CardTitle className="text-white">Quick Overview</CardTitle>
-              <CardDescription className="text-zinc-400">
-                Your shards at a glance
-              </CardDescription>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Bookmark size={20} className="text-lime-400" />
+                    Saved Shards
+                  </CardTitle>
+                  <CardDescription className="text-zinc-400">
+                    Your recently saved Shards
+                  </CardDescription>
+                </div>
+                {savedShards.length > 0 && (
+                  <Button
+                    variant="ghost"
+                    className="text-lime-400 hover:text-lime-300 hover:bg-lime-400/10"
+                    onClick={() => setIsDrawerOpen(true)}
+                  >
+                    View All →
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Shards Card */}
-                <div className="bg-gradient-to-br from-zinc-800 to-zinc-800/80 p-5 rounded-xl border border-zinc-700/50 hover:border-lime-500/30 transition-all group">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="p-2 rounded-lg bg-lime-500/10 group-hover:bg-lime-500/20 transition-colors">
-                      <Code className="h-5 w-5 text-lime-400" />
-                    </div>
-                    <TrendingUp className="h-4 w-4 text-lime-400" />
-                  </div>
-                  <h3 className="text-3xl font-bold text-white mb-1">
-                    {userStats.total_shards}
-                  </h3>
-                  <p className="text-sm text-zinc-400">Total Shards</p>
-                  <div className="mt-3 pt-3 border-t border-zinc-700/50">
-                    <p className="text-xs text-lime-400 flex items-center">
-                      <TrendingUp className="h-3 w-3 mr-1" />
-                      12% from last month
-                    </p>
-                  </div>
-                </div>
+              {savedShards.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
+                  {savedShards.slice(0, 3).map((savedShard) => (
+                    <div
+                      key={savedShard.id}
+                      className="bg-zinc-800/50 p-4 rounded-lg border border-zinc-700/50 hover:border-lime-500/30 transition-colors group h-full flex flex-col"
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="font-medium text-white group-hover:text-lime-400 transition-colors line-clamp-1">
+                          {savedShard.shard.title}
+                        </h3>
+                        <span className="text-xs text-zinc-500">
+                          {format(new Date(savedShard.saved_at), "MMM d")}
+                        </span>
+                      </div>
 
-                {/* Likes Card */}
-                <div className="bg-gradient-to-br from-zinc-800 to-zinc-800/80 p-5 rounded-xl border border-zinc-700/50 hover:border-rose-500/30 transition-all group">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="p-2 rounded-lg bg-rose-500/10 group-hover:bg-rose-500/20 transition-colors">
-                      <Heart className="h-5 w-5 text-rose-400" />
-                    </div>
-                    <TrendingUp className="h-4 w-4 text-rose-400" />
-                  </div>
-                  <h3 className="text-3xl font-bold text-white mb-1">
-                    {userStats.total_likes}
-                  </h3>
-                  <p className="text-sm text-zinc-400">Total Likes</p>
-                  <div className="mt-3 pt-3 border-t border-zinc-700/50">
-                    <p className="text-xs text-rose-400 flex items-center">
-                      <TrendingUp className="h-3 w-3 mr-1" />
-                      8% from last month
-                    </p>
-                  </div>
-                </div>
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Avatar className="h-5 w-5">
+                          <AvatarImage
+                            src={savedShard.shard.user.image}
+                            alt={savedShard.shard.user.name}
+                          />
+                          <AvatarFallback className="text-xs">
+                            {savedShard.shard.user.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-xs text-zinc-400">
+                          @{savedShard.shard.user.username}
+                        </span>
+                      </div>
 
-                {/* Saves Card */}
-                <div className="bg-gradient-to-br from-zinc-800 to-zinc-800/80 p-5 rounded-xl border border-zinc-700/50 hover:border-blue-500/30 transition-all group">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="p-2 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
-                      <Save className="h-5 w-5 text-blue-400" />
+                      <p className="text-sm text-zinc-400 mb-4 line-clamp-2 flex-grow">
+                        {savedShard.shard.desc || "No description provided"}
+                      </p>
+
+                      <Link
+                        href={`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/shards/${savedShard.shard.slug}`}
+                        target="_blank"
+                        className="inline-flex items-center text-xs text-lime-400 hover:text-lime-300 transition-colors mt-auto"
+                      >
+                        View Shard <ExternalLink className="h-3 w-3 ml-1" />
+                      </Link>
                     </div>
-                    <TrendingUp className="h-4 w-4 text-blue-400" />
-                  </div>
-                  <h3 className="text-3xl font-bold text-white mb-1">
-                    {userStats.total_saves}
-                  </h3>
-                  <p className="text-sm text-zinc-400">Total Saves</p>
-                  <div className="mt-3 pt-3 border-t border-zinc-700/50">
-                    <p className="text-xs text-blue-400 flex items-center">
-                      <TrendingUp className="h-3 w-3 mr-1" />
-                      15% from last month
-                    </p>
-                  </div>
+                  ))}
                 </div>
-              </div>
+              ) : (
+                <div className="text-center py-8 bg-zinc-800/70 rounded-xl border border-dashed border-zinc-700/50">
+                  <Bookmark className="h-12 w-12 text-zinc-600 mx-auto mb-3" />
+                  <p className="text-zinc-500">No shards saved yet</p>
+                  <p className="text-zinc-600 text-sm mt-1">
+                    Save interesting shards to find them here later
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
+
+        {/* Enhanced Quick Stats Cards */}
+        <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm lg:col-span-2 mb-8">
+          <CardHeader>
+            <CardTitle className="text-white">Quick Overview</CardTitle>
+            <CardDescription className="text-zinc-400">
+              Your shards at a glance
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Shards Card */}
+              <div className="bg-gradient-to-br from-zinc-800 to-zinc-800/80 p-5 rounded-xl border border-zinc-700/50 hover:border-lime-500/30 transition-all group">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 rounded-lg bg-lime-500/10 group-hover:bg-lime-500/20 transition-colors">
+                    <Code className="h-5 w-5 text-lime-400" />
+                  </div>
+                  <TrendingUp className="h-4 w-4 text-lime-400" />
+                </div>
+                <h3 className="text-3xl font-bold text-white mb-1">
+                  {userStats.total_shards}
+                </h3>
+                <p className="text-sm text-zinc-400">Total Shards</p>
+              </div>
+
+              {/* Likes Card */}
+              <div className="bg-gradient-to-br from-zinc-800 to-zinc-800/80 p-5 rounded-xl border border-zinc-700/50 hover:border-rose-500/30 transition-all group">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 rounded-lg bg-rose-500/10 group-hover:bg-rose-500/20 transition-colors">
+                    <Heart className="h-5 w-5 text-rose-400" />
+                  </div>
+                  <TrendingUp className="h-4 w-4 text-rose-400" />
+                </div>
+                <h3 className="text-3xl font-bold text-white mb-1">
+                  {userStats.total_likes}
+                </h3>
+                <p className="text-sm text-zinc-400">Total Likes</p>
+              </div>
+
+              {/* Saves Card */}
+              <div className="bg-gradient-to-br from-zinc-800 to-zinc-800/80 p-5 rounded-xl border border-zinc-700/50 hover:border-blue-500/30 transition-all group">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
+                    <Save className="h-5 w-5 text-blue-400" />
+                  </div>
+                  <TrendingUp className="h-4 w-4 text-blue-400" />
+                </div>
+                <h3 className="text-3xl font-bold text-white mb-1">
+                  {userStats.total_saves}
+                </h3>
+                <p className="text-sm text-zinc-400">Total Saves</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <Tabs defaultValue="shards" className="w-full">
           <TabsList className="bg-zinc-900/50 border border-zinc-800 backdrop-blur-sm sticky top-0 z-10">
@@ -481,9 +572,9 @@ export function DashboardClient({
                     Engagement Analytics
                   </CardTitle>
                   <CardDescription className="text-zinc-400">
-                    <span className="text-rose-500">Likes</span> and{" "}
-                    <span className="text-blue-500">saves</span> over the last
-                    30 days
+                    <span className="text-rose-500">Likes</span>,{" "}
+                    <span className="text-blue-500">saves</span>, and{" "}
+                    <span className="text-lime-500">views</span> on your shards
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="h-[400px]">
@@ -526,6 +617,24 @@ export function DashboardClient({
                             stopOpacity={0}
                           />
                         </linearGradient>
+                        <linearGradient
+                          id="colorViews"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="5%"
+                            stopColor="#84cc16"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="#84cc16"
+                            stopOpacity={0}
+                          />
+                        </linearGradient>
                       </defs>
                       <CartesianGrid
                         strokeDasharray="3 3"
@@ -558,7 +667,11 @@ export function DashboardClient({
                         labelStyle={{ color: "#fff" }}
                         formatter={(value, name) => [
                           value,
-                          name === "likes" ? "Likes" : "Saves",
+                          name === "likes"
+                            ? "Likes"
+                            : name === "saves"
+                            ? "Saves"
+                            : "Views",
                         ]}
                         labelFormatter={(label) =>
                           `Date: ${format(new Date(label), "MMM d, yyyy")}`
@@ -581,6 +694,15 @@ export function DashboardClient({
                         fillOpacity={1}
                         fill="url(#colorSaves)"
                         name="saves"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="views"
+                        stroke="#84cc16"
+                        strokeWidth={2}
+                        fillOpacity={1}
+                        fill="url(#colorViews)"
+                        name="views"
                       />
                     </AreaChart>
                   </ResponsiveContainer>
@@ -635,6 +757,11 @@ export function DashboardClient({
             </div>
           </TabsContent>
         </Tabs>
+        <SavedShardsDrawer
+          open={isDrawerOpen}
+          onOpenChange={setIsDrawerOpen}
+          savedShards={savedShards}
+        />
       </div>
     </div>
   );

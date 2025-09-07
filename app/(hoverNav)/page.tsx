@@ -93,7 +93,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <FadeInOnScroll>
             <h2 className="text-4xl text-center font-prompt font-[400] mb-4 text-foreground dark:text-foreground">
-              Why developers love Shards
+              Why developers love it
             </h2>
             <p className="text-muted-foreground dark:text-muted-foreground text-center text-lg max-w-2xl mx-auto mb-16">
               We&apos;ve built the platform developers actually want -
@@ -124,8 +124,8 @@ export default function Home() {
                     size={32}
                   />
                 }
-                title="AI-Powered Reviews"
-                para="Get intelligent, actionable feedback from GPT-4o on your code."
+                title="Concept to Clarity"
+                para="Take messy thoughts and turn them into a clear idea you can manifest."
                 step={2}
               />
 
@@ -136,8 +136,8 @@ export default function Home() {
                     size={32}
                   />
                 }
-                title="Grow Your Skills"
-                para="Learn from concrete suggestions to level up your coding abilities."
+                title="Empower Your Skills"
+                para="Learn from practical, real-world suggestions to level up your coding abilities."
                 step={3}
               />
 
@@ -149,7 +149,7 @@ export default function Home() {
                   />
                 }
                 title="Discover Inspiration"
-                para="Explore projects from other developers and find new ideas."
+                para="Explore projects from other developers and take inspiration to create your own."
                 step={4}
               />
             </div>
@@ -157,11 +157,11 @@ export default function Home() {
 
           {/* First Screenshot Section - Left image, right text */}
           <FadeInOnScroll>
-            <div className="flex flex-col md:flex-row items-center gap-8 mb-120 mt-60 relative">
-              <div className="md:w-4/5 relative md:left-[-30%] w-[180%] scale-120 origin-left">
+            <div className="flex flex-col md:flex-row items-center gap-8 mb-30 md:mb-120 mt-20 md:mt-60 relative">
+              <div className="w-full md:w-[80vw] lg:w-[85vw] max-w-none md:relative md:left-[-25vw] lg:left-[-30vw] md:scale-120">
                 <div className="w-full aspect-video rounded-2xl overflow-hidden flex items-center justify-center">
                   <video
-                    src="/shardviewanimate.mp4"
+                    src="/shardsviewanimate.mp4"
                     autoPlay
                     loop
                     muted
@@ -170,15 +170,15 @@ export default function Home() {
                   />
                 </div>
               </div>
-              <div className="md:w-1/2 md:pr-8 md:ml-[-10%]">
+              <div className="w-full md:w-[45vw] lg:w-[40vw] md:max-w-md md:ml-[-10vw] lg:ml-[-12vw] z-10 bg-background md:bg-transparent p-4 md:p-0 rounded-lg md:rounded-none">
                 <h3 className="text-3xl font-[500] mb-4 text-foreground dark:text-foreground">
-                  Turn repositories into portfolio pieces
+                  Get AI-powered code insights
                 </h3>
                 <p className="text-gray-600 text-lg dark:text-gray-600 font-hind mb-6">
-                  Shards transforms your GitHub projects into visually appealing
-                  portfolio items that go beyond standard README files. Showcase
-                  your work in a format that&apos;s both developer-friendly and
-                  visually engaging.
+                  Our AI analyzes your code and provides specific, actionable
+                  suggestions for improvement. From architecture recommendations
+                  to syntax optimizations, get feedback that helps you grow as a
+                  developer.
                 </p>
                 <button className="flex text-lg items-center text-lime-600 dark:text-theme-primary font-medium group">
                   See how it works
@@ -193,16 +193,28 @@ export default function Home() {
 
           {/* Second Screenshot Section - Right video, left text */}
           <FadeInOnScroll>
-            <div className="flex flex-col md:flex-row items-center gap-8 mb-120 relative">
-              <div className="md:w-1/2 order-2 md:order-1 md:pl-8 scale-120 origin-left md:mr-[-10%] z-10">
-                <h3 className="text-2xl font-[500] mb-4 text-foreground dark:text-foreground">
-                  Get AI-powered code insights
+            <div className="flex flex-col md:flex-row-reverse items-center gap-8 mb-30 md:mb-120 relative">
+              <div className="w-full md:w-[80vw] lg:w-[85vw] max-w-none md:relative md:right-[-25vw] lg:right-[-30vw] md:scale-120">
+                <div className="w-full aspect-video rounded-2xl overflow-hidden flex items-center justify-center">
+                  <video
+                    src="/shardsviewanimate.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover rounded-2xl pointer-events-none select-none"
+                  />
+                </div>
+              </div>
+              <div className="w-full md:w-[45vw] lg:w-[40vw] md:max-w-md md:mr-[-10vw] lg:mr-[-12vw] z-10 bg-background md:bg-transparent p-4 md:p-0 rounded-lg md:rounded-none order-first md:order-none">
+                <h3 className="text-3xl font-[500] mb-4 text-foreground dark:text-foreground">
+                  Turn repositories into portfolio pieces
                 </h3>
-                <p className="text-gray-600 dark:text-gray-600 font-hind mb-6">
-                  Our AI analyzes your code and provides specific, actionable
-                  suggestions for improvement. From architecture recommendations
-                  to syntax optimizations, get feedback that helps you grow as a
-                  developer.
+                <p className="text-gray-600 font-lg dark:text-gray-600 font-hind mb-6">
+                  Shards transforms your GitHub projects into visually appealing
+                  portfolio items that go beyond standard README files. Showcase
+                  your work in a format that's both developer-friendly and
+                  visually engaging.
                 </p>
                 <button className="flex items-center text-purple-600 font-medium group">
                   Explore AI features
@@ -212,37 +224,25 @@ export default function Home() {
                   />
                 </button>
               </div>
-              <div className="md:w-4/5 relative order-1 md:order-2 md:right-[-30%] w-[180%] scale-120 origin-left">
-                <div className="w-full aspect-video rounded-2xl overflow-hidden flex items-center justify-center">
-                  <video
-                    src="/shardviewanimate.mp4"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-[120%] h-[120%] object-cover rounded-2xl pointer-events-none select-none"
-                  />
-                </div>
-              </div>
             </div>
           </FadeInOnScroll>
 
           {/* Third Screenshot Section - Left video, right text */}
           <FadeInOnScroll>
-            <div className="flex flex-col md:flex-row items-center gap-8 mb-60 relative">
-              <div className="md:w-4/5 relative md:left-[-30%] w-[180%] scale-120 origin-left">
+            <div className="flex flex-col md:flex-row items-center gap-8 mb-20 md:mb-60 relative">
+              <div className="w-full md:w-[80vw] lg:w-[85vw] max-w-none md:relative md:left-[-25vw] lg:left-[-30vw] md:scale-120">
                 <div className="w-full aspect-video rounded-2xl overflow-hidden flex items-center justify-center">
                   <video
-                    src="/shardviewanimate.mp4"
+                    src="/shardsviewanimate.mp4"
                     autoPlay
                     loop
                     muted
                     playsInline
-                    className="w-[120%] h-[120%] object-cover rounded-2xl pointer-events-none select-none"
+                    className="w-full h-full object-cover rounded-2xl pointer-events-none select-none"
                   />
                 </div>
               </div>
-              <div className="md:w-1/2 md:pr-8 md:ml-[-10%]">
+              <div className="w-full md:w-[45vw] lg:w-[40vw] md:max-w-md md:ml-[-10vw] lg:ml-[-12vw] z-10 bg-background md:bg-transparent p-4 md:p-0 rounded-lg md:rounded-none">
                 <h3 className="text-3xl font-[500] mb-4 text-foreground dark:text-foreground">
                   Join a community of builders
                 </h3>
@@ -397,22 +397,23 @@ export default function Home() {
 
           <FadeInOnScroll>
             <div className="text-center mb-30">
-              <h2 className="text-6xl font-[550] mb-10">
+              <h2 className="text-4xl md:text-6xl font-[550] mb-10">
                 <span
-                  className="relative inline-flex items-center text-transparent bg-clip-text 
-                                bg-gradient-to-r 
-                                from-gray-900 via-gray-100 to-gray-900
-                                dark:from-white dark:via-purple-200 dark:to-white"
+                  className="relative inline-flex flex-col md:flex-row items-center text-transparent bg-clip-text 
+              bg-gradient-to-r 
+              from-gray-900 via-gray-100 to-gray-900
+              dark:from-white dark:via-purple-200 dark:to-white"
                 >
-                  <span>Explore</span>
+                  <span className="text-center md:text-left">Explore</span>
                   <TextShimmerWave
-                    className="relative -mx-5 z-10 inline-block font-rsalt font-[400] 
-                              translate-y-[-5px] rotate-[-7deg] scale-110"
+                    className="relative md:-mx-5 z-10 inline-block font-rsalt font-[400] 
+                md:translate-y-[-5px] md:rotate-[-7deg] md:scale-110
+                mx-2 my-2 md:my-0"
                     duration={1}
                   >
                     AI-Powered
                   </TextShimmerWave>
-                  <span>Tools</span>
+                  <span className="text-center md:text-left">Tools</span>
                 </span>
               </h2>
 

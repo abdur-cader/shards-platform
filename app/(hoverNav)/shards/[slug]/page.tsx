@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { GithubIcon } from "lucide-react";
+import { GithubIcon, Eye } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -25,6 +25,29 @@ import { Icons } from "@/components/icons";
 import { formatDate } from "@/lib/utils";
 import { LikeButton } from "@/components/LikeButton";
 import { SaveButton } from "@/components/SaveButton";
+import { headers } from "next/headers";
+
+// Add this function to track views
+async function trackView(shardId: string, userId?: string) {
+  try {
+    const headersList = await headers();
+    const ipAddress = headersList.get("x-forwarded-for") || "unknown";
+    const userAgent = headersList.get("user-agent") || "unknown";
+
+    const { error } = await supabase.from("views").insert({
+      shard_id: shardId,
+      user_id: userId || null,
+      ip_address: ipAddress,
+      user_agent: userAgent,
+    });
+
+    if (error) {
+      console.error("Error tracking view:", error);
+    }
+  } catch (error) {
+    console.error("Error in trackView:", error);
+  }
+}
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -34,19 +57,19 @@ export default async function ShardDetailPage({ params }: Props) {
   const { slug } = await params;
   const session = await auth();
 
-  const headers: HeadersInit = {
+  const headersList: HeadersInit = {
     "Content-Type": "application/json",
   };
 
   if (session?.supabaseAccessToken) {
-    headers["sb-access-token"] = session?.supabaseAccessToken;
+    headersList["sb-access-token"] = session?.supabaseAccessToken;
   }
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/shards/${slug}`,
     {
       method: "GET",
-      headers,
+      headers: headersList,
     }
   );
   const json = await res.json();
@@ -57,6 +80,11 @@ export default async function ShardDetailPage({ params }: Props) {
 
   const shard = json.shard;
   const isOwner = session?.user?.id === shard.user_id;
+
+  // Track the view (non-blocking)
+  if (shard) {
+    trackView(shard.id, session?.user?.id);
+  }
 
   // Fetch like information
   let initialLiked = false;
@@ -163,6 +191,11 @@ export default async function ShardDetailPage({ params }: Props) {
                   Updated {formatDate(shard.updated_at)}
                 </span>
               )}
+              {/* Add view count */}
+              <span className="flex items-center gap-1.5">
+                <Eye className="h-4 w-4" />
+                {shard.view_count || 0} views
+              </span>
             </div>
           </div>
 
@@ -284,6 +317,16 @@ export default async function ShardDetailPage({ params }: Props) {
                       transition-transform duration-500 ease-in-out"
                   />
                 </Button>
+              </div>
+
+              {/* Add view count to action area */}
+              <div className="flex items-center justify-between pt-4 border-t border-zinc-300 dark:border-zinc-700">
+                <div className="flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-400">
+                  <span className="flex items-center gap-1.5">
+                    <Eye className="h-4 w-4" />
+                    {shard.view_count || 0} views
+                  </span>
+                </div>
               </div>
             </div>
 

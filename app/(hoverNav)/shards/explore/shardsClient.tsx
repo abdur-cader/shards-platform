@@ -6,6 +6,16 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { LayoutDashboard, LayoutGrid } from "lucide-react";
 import FadeInOnScroll from "@/components/FadeInOnScroll";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface Shard {
   id: string | number;
@@ -20,10 +30,160 @@ interface Shard {
 
 interface Props {
   shards: Shard[];
+  currentPage: number;
+  totalPages: number;
+  totalShards: number;
 }
 
-export default function ShardsClient({ shards }: Props) {
+export default function ShardsClient({
+  shards,
+  currentPage,
+  totalPages,
+  totalShards,
+}: Props) {
   const [layout, setLayout] = useState<"masonry" | "grid">("masonry");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", page.toString());
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  const renderPaginationItems = () => {
+    const items = [];
+
+    // Always show Previous button
+    items.push(
+      <PaginationItem key="prev">
+        <PaginationPrevious
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            if (currentPage > 1) handlePageChange(currentPage - 1);
+          }}
+          className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+        />
+      </PaginationItem>
+    );
+
+    // Show page numbers only if there are multiple pages
+    if (totalPages > 1) {
+      const maxVisiblePages = 5;
+      let startPage = Math.max(
+        1,
+        currentPage - Math.floor(maxVisiblePages / 2)
+      );
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+      // Adjust if we're near the beginning
+      if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+
+      // First page and ellipsis if needed
+      if (startPage > 1) {
+        items.push(
+          <PaginationItem key={1}>
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePageChange(1);
+              }}
+              isActive={currentPage === 1}
+            >
+              1
+            </PaginationLink>
+          </PaginationItem>
+        );
+
+        if (startPage > 2) {
+          items.push(
+            <PaginationItem key="ellipsis-start">
+              <PaginationEllipsis />
+            </PaginationItem>
+          );
+        }
+      }
+
+      // Page numbers
+      for (let i = startPage; i <= endPage; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePageChange(i);
+              }}
+              isActive={currentPage === i}
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+
+      // Last page and ellipsis if needed
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          items.push(
+            <PaginationItem key="ellipsis-end">
+              <PaginationEllipsis />
+            </PaginationItem>
+          );
+        }
+
+        items.push(
+          <PaginationItem key={totalPages}>
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePageChange(totalPages);
+              }}
+              isActive={currentPage === totalPages}
+            >
+              {totalPages}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    } else {
+      // Show just the current page when there's only one page
+      items.push(
+        <PaginationItem key={1}>
+          <PaginationLink
+            href="#"
+            onClick={(e) => e.preventDefault()}
+            isActive={true}
+          >
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    // Always show Next button
+    items.push(
+      <PaginationItem key="next">
+        <PaginationNext
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            if (currentPage < totalPages) handlePageChange(currentPage + 1);
+          }}
+          className={
+            currentPage === totalPages ? "pointer-events-none opacity-50" : ""
+          }
+        />
+      </PaginationItem>
+    );
+
+    return items;
+  };
 
   return (
     <div className="flex flex-col min-h-screen z-50">
@@ -41,6 +201,9 @@ export default function ShardsClient({ shards }: Props) {
           </h1>
           <p className="text-md md:text-lg text-gray-600 mt-10 dark:text-gray-300 max-w-md mx-auto">
             Discover what our community is building and sharing.
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Showing {shards.length} of {totalShards || 0} shards
           </p>
         </div>
       </div>
@@ -106,6 +269,13 @@ export default function ShardsClient({ shards }: Props) {
             ))}
           </div>
         </section>
+
+        {/* Always show pagination, even with one page */}
+        <div className="flex justify-center mt-8">
+          <Pagination>
+            <PaginationContent>{renderPaginationItems()}</PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </div>
   );
