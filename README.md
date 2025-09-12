@@ -57,8 +57,6 @@ Once installed, you can run the development server to view your project:
 ```
 npm run dev
 ```
-
+This will start the application on [http://localhost:3000](http://localhost:3000).
 
 (This README is created by Shared)
-
-This will start the application on [http://localhost:3000](http://localhost:3000).
